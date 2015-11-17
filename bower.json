@@ -1,0 +1,21 @@
+{
+  "name": "15pic-puzzle",
+  "description": "15-puzzle game with pictures",
+  "main": "index.js",
+  "authors": [
+    "Vadislav Zhuk <malcolm.madsheep@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/mlclmdsh33p/15pic-puzzle",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4"
+  }
+}

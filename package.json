@@ -1,0 +1,23 @@
+{
+  "name": "15pic-puzzle",
+  "version": "1.0.0",
+  "description": "15-puzzle game with pictures",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mlclmdsh33p/15pic-puzzle.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mlclmdsh33p/15pic-puzzle/issues"
+  },
+  "homepage": "https://github.com/mlclmdsh33p/15pic-puzzle#readme",
+  "devDependencies": {
+    "jquery": "^2.1.4"
+  },
+  "dependencies": {}
+}
