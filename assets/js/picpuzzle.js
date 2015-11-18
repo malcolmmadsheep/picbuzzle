@@ -5,14 +5,15 @@ function Picpuzzle() {}
 (function() {
 	Picpuzzle.prototype.CANVAS_WIDTH = 512;
 	Picpuzzle.prototype.CANVAS_HEIGHT = 512;
+	Picpuzzle.prototype.CELL_WIDTH = 0;
+	Picpuzzle.prototype.CELL_HEIGHT = 0;
+	Picpuzzle.prototype.TWEEN_DURATION = 500;
 	Picpuzzle.prototype.DIRECTIONS = ['up', 'right', 'down', 'left'];
 	Picpuzzle.prototype.imgSource = '';
 	Picpuzzle.prototype.context = null;
 	Picpuzzle.prototype.field = [];
 	Picpuzzle.prototype.rows = -1;
 	Picpuzzle.prototype.cols = -1;
-	Picpuzzle.prototype.cellW = -1;
-	Picpuzzle.prototype.cellH = -1;
 
 	Picpuzzle.prototype.startGame = function(cellCount) {
 		this.init(cellCount);
@@ -29,7 +30,7 @@ function Picpuzzle() {}
 
 	Picpuzzle.prototype.init = function(cellCount, imgSource) {
 		this.rows = this.cols = parseInt(cellCount);
-		this.cellW = this.cellH = Math.floor(this.CANVAS_WIDTH / cellCount);
+		this.CELL_WIDTH = this.CELL_HEIGHT = Math.floor(this.CANVAS_WIDTH / cellCount);
 		this.field.length = this.rows * this.cols;
 		this.setImageSource(imgSource);
 
@@ -44,18 +45,19 @@ function Picpuzzle() {}
 		for (var i = 0; i < this.rows; i++) {
 			for (var j = 0; j < this.cols; j++) {
 				var index = this.getIndex(i, j);
-				var x = j * this.cellW,
-					y = i * this.cellH,
+				var x = j * this.CELL_WIDTH,
+					y = i * this.CELL_HEIGHT,
 					image = new Image();
 				image.src = this.imgSource;
 				if (index === this.field.length - 1) {
 					image = null;
 				}
-				this.field[index] = new ImageCell(index, x, y, this.cellW, this.cellH, image);
+				this.field[index] = new ImageCell(index, x, y, x, y, this.CELL_WIDTH, this.CELL_HEIGHT, image);
 			}
 		}
-
+		// console.log(this.field);
 		this.shuffle();
+		// console.log(this.field);
 	};
 
 	Picpuzzle.prototype.draw = function() {
@@ -68,7 +70,7 @@ function Picpuzzle() {}
 				index = this.getIndex(i, j);
 				cell = this.field[index];
 				if (cell.image !== null) {
-					that.context.drawImage(cell.image, cell.x, cell.y, cell.width, cell.height, j * cell.width, i * cell.height, cell.width, cell.height);
+					that.context.drawImage(cell.image, cell.sx, cell.sy, cell.width, cell.height, cell.coords.x, cell.coords.y, cell.width, cell.height);
 				}
 			}
 		}
@@ -78,10 +80,8 @@ function Picpuzzle() {}
 		var length = this.field.length,
 			field = this.field;
 		for (var i = 0; i < length; i++) {
-			var newIndex = Math.floor(Math.random() * i),
-				temp = field[i];
-			field[i] = field[newIndex];
-			field[newIndex] = temp;
+			var newIndex = Math.floor(Math.random() * i);
+			this.swapCells(i, newIndex);
 		}
 	}
 
@@ -143,10 +143,11 @@ function Picpuzzle() {}
 			return;
 		}
 	}
-
+	// i - index of empty cell, j - filled cell
 	Picpuzzle.prototype.moveCell = function(i, j) {
-		this.swapCells(i, j);
-		this.draw();
+		this.tweenCell(i, j);
+		// this.swapCells(i, j);
+		// this.draw();
 		if (this.check()) {
 			console.log('Congratulations!')
 		}
@@ -154,7 +155,7 @@ function Picpuzzle() {}
 	}
 
 	Picpuzzle.prototype.check = function() {
-		var field = this.field, 
+		var field = this.field,
 			length = field.length,
 			result = true;
 		for (var i = 0; i < length; i++) {
@@ -168,6 +169,9 @@ function Picpuzzle() {}
 
 	Picpuzzle.prototype.swapCells = function(i, j) {
 		var temp = this.field[i];
+		this.field[i].coords = this.getCoordsById(j),
+		this.field[j].coords = this.getCoordsById(i);
+		
 		this.field[i] = this.field[j];
 		this.field[j] = temp;
 	}
@@ -182,7 +186,104 @@ function Picpuzzle() {}
 		}
 	}
 
+	Picpuzzle.prototype.tweenCell = function(i, j) {
+		var f = this.field,
+			ec = f[i].coords,
+			fc = f[j].coords,
+			dX = ec.x - fc.x,
+			dY = ec.y - fc.y,
+			deltaMove = this.CELL_WIDTH / this.TWEEN_DURATION,
+			animation = null,
+			puzzle = this;
+			// console.log('delta move', deltaMove)
+		if (dX > 0) {
+			console.log('dX > 0', dX);
+			animation = setInterval(function() {
+				dX -= deltaMove;
+				// console.log(dX);
+				f[j].coords.x = f[j].coords.x + deltaMove;
+				console.log('new c', f[j].coords.x);
+				puzzle.draw();
+				if (dX <= 0) {
+					clearInterval(animation);
+					console.log('dX > 0 STOP');
+				}
+			}, 1);
+		} else if (dX < 0) {
+			console.log('dX < 0');
+
+			animation = setInterval(function() {
+				dX += deltaMove;
+				// console.log(dX);
+				f[j].coords.x = f[j].coords.x - deltaMove;
+				console.log('new c', f[j].coords.x);
+				puzzle.draw();
+				if (dX >= 0) {
+					clearInterval(animation);
+					console.log('dX > 0 STOP');
+				}
+			}, 1);
+		}
+
+		if (dY > 0) {
+			console.log('dY > 0');
+			animation = setInterval(function() {
+				dY -= deltaMove;
+				// console.log(dX);
+				f[j].coords.y = f[j].coords.y + deltaMove;
+				console.log('new c', f[j].coords.y);
+				puzzle.draw();
+				if (dY <= 0) {
+					clearInterval(animation);
+					console.log('dX > 0 STOP');
+				}
+			}, 1);
+		} else if (dY < 0) {
+			console.log('dY < 0');
+			animation = setInterval(function() {
+				dY += deltaMove;
+				// console.log(dX);
+				f[j].coords.y = f[j].coords.y - deltaMove;
+				console.log('new c', f[j].coords.y);
+				puzzle.draw();
+				if (dY >= 0) {
+					clearInterval(animation);
+					console.log('dX > 0 STOP');
+				}
+			}, 1);
+		}
+
+		setTimeout(function() {
+			puzzle.swapCells(i, j);
+		}, puzzle.TWEEN_DURATION * 5);
+		// console.log('dX:', dX, 'dY:', dY);
+		// console.log('dM', deltaMove);
+		// console.log('dX', dX, 'dY', dY);
+		// console.log('EC:', emptyCoords);
+		// console.log('FC:', filledCoords);
+		// var field = this.field,
+		// 	dX = field[i].x - field[j].x,
+		// 	dY = field[i].y - field[j].y,
+		// 	animation = null;
+
+		//  	
+		// var field = this.field,
+		// 	x = field[i].x,
+		// 	w = field[j].x + field[j].width,
+		// 	y = field[i].y,
+		// 	h = field[j].y + field[j].height;
+		// this.context.clearRect(x, y, w, h);
+	}
+
 	Picpuzzle.prototype.getIndex = function(i, j) {
 		return i * this.rows + j;
+	}
+
+	Picpuzzle.prototype.getCoordsById = function(id) {
+		var coords = {};
+		coords.x = (id % this.cols) * this.CELL_WIDTH;
+		coords.y = (Math.floor((id - (id % this.cols)) / this.rows)) * this.CELL_HEIGHT;
+
+		return coords;
 	}
 })();
