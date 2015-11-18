@@ -7,13 +7,15 @@ function Picpuzzle() {}
 	Picpuzzle.prototype.CANVAS_HEIGHT = 512;
 	Picpuzzle.prototype.CELL_WIDTH = 0;
 	Picpuzzle.prototype.CELL_HEIGHT = 0;
-	Picpuzzle.prototype.TWEEN_DURATION = 500;
+	Picpuzzle.prototype.TWEEN_DURATION = 150;
 	Picpuzzle.prototype.DIRECTIONS = ['up', 'right', 'down', 'left'];
 	Picpuzzle.prototype.imgSource = '';
 	Picpuzzle.prototype.context = null;
 	Picpuzzle.prototype.field = [];
 	Picpuzzle.prototype.rows = -1;
 	Picpuzzle.prototype.cols = -1;
+	Picpuzzle.prototype.isMoving = false;
+	Picpuzzle.prototype.directionsQueue = [];
 
 	Picpuzzle.prototype.startGame = function(cellCount) {
 		this.init(cellCount);
@@ -64,7 +66,8 @@ function Picpuzzle() {}
 		var index = -1,
 			cell = null,
 			that = this;
-		this.context.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
+		// this.context.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
+		this.context.canvas.width = this.context.canvas.width;
 		for (var i = 0; i < this.rows; i++) {
 			for (var j = 0; j < this.cols; j++) {
 				index = this.getIndex(i, j);
@@ -111,39 +114,39 @@ function Picpuzzle() {}
 	}
 
 	Picpuzzle.prototype.move = function(direction) {
-		var index = this.getEmptyCell(),
-			length = this.field.length,
-			newIndex = -1;
+			var index = this.getEmptyCell(),
+				length = this.field.length,
+				newIndex = -1;
 
-		if (direction === this.DIRECTIONS[0] && // up
-			!(index >= length - this.cols && index < length)) {
-			newIndex = index + this.cols;
-			this.moveCell(index, newIndex);
-			return;
-		}
+			if (direction === this.DIRECTIONS[0] && // up
+				!(index >= length - this.cols && index < length)) {
+				newIndex = index + this.cols;
+				this.moveCell(index, newIndex);
+				return;
+			}
 
-		if (direction === this.DIRECTIONS[1] && // right
-			(index % this.rows !== 0)) {
-			newIndex = index - 1;
-			this.moveCell(index, newIndex);
-			return;
-		}
+			if (direction === this.DIRECTIONS[1] && // right
+				(index % this.rows !== 0)) {
+				newIndex = index - 1;
+				this.moveCell(index, newIndex);
+				return;
+			}
 
-		if (direction === this.DIRECTIONS[2] && // down
-			!(index >= 0 && index < this.cols)) {
-			newIndex = index - this.cols;
-			this.moveCell(index, newIndex);
-			return;
-		}
+			if (direction === this.DIRECTIONS[2] && // down
+				!(index >= 0 && index < this.cols)) {
+				newIndex = index - this.cols;
+				this.moveCell(index, newIndex);
+				return;
+			}
 
-		if (direction === this.DIRECTIONS[3] && // left
-			(index % this.rows !== this.cols - 1)) {
-			newIndex = index + 1;
-			this.moveCell(index, newIndex);
-			return;
+			if (direction === this.DIRECTIONS[3] && // left
+				(index % this.rows !== this.cols - 1)) {
+				newIndex = index + 1;
+				this.moveCell(index, newIndex);
+				return;
+			}
 		}
-	}
-	// i - index of empty cell, j - filled cell
+		// i - index of empty cell, j - filled cell
 	Picpuzzle.prototype.moveCell = function(i, j) {
 		this.tweenCell(i, j);
 		// this.swapCells(i, j);
@@ -169,9 +172,9 @@ function Picpuzzle() {}
 
 	Picpuzzle.prototype.swapCells = function(i, j) {
 		var temp = this.field[i];
-		this.field[i].coords = this.getCoordsById(j),
+		this.field[i].coords = this.getCoordsById(j);
 		this.field[j].coords = this.getCoordsById(i);
-		
+
 		this.field[i] = this.field[j];
 		this.field[j] = temp;
 	}
@@ -195,84 +198,72 @@ function Picpuzzle() {}
 			deltaMove = this.CELL_WIDTH / this.TWEEN_DURATION,
 			animation = null,
 			puzzle = this;
-			// console.log('delta move', deltaMove)
-		if (dX > 0) {
-			console.log('dX > 0', dX);
-			animation = setInterval(function() {
-				dX -= deltaMove;
-				// console.log(dX);
-				f[j].coords.x = f[j].coords.x + deltaMove;
-				console.log('new c', f[j].coords.x);
-				puzzle.draw();
-				if (dX <= 0) {
-					clearInterval(animation);
-					console.log('dX > 0 STOP');
-				}
-			}, 1);
-		} else if (dX < 0) {
-			console.log('dX < 0');
+		if (!this.isMoving) {
+			if (dX > 0) {
+				// console.log('dX > 0', dX);
+				animation = setInterval(function() {
+					dX -= deltaMove;
+					f[j].coords.x = f[j].coords.x + deltaMove;
+					// console.log('new c', f[j].coords.x);
+					puzzle.draw();
+					if (dX <= 0) {
+						clearInterval(animation);
+						puzzle.swapCells(i, j);
+						puzzle.isMoving = false;
+						// console.log('dX > 0 STOP');
+					}
+				}, 1);
+			} else if (dX < 0) {
+				// console.log('dX < 0');
 
-			animation = setInterval(function() {
-				dX += deltaMove;
-				// console.log(dX);
-				f[j].coords.x = f[j].coords.x - deltaMove;
-				console.log('new c', f[j].coords.x);
-				puzzle.draw();
-				if (dX >= 0) {
-					clearInterval(animation);
-					console.log('dX > 0 STOP');
-				}
-			}, 1);
+				animation = setInterval(function() {
+					dX += deltaMove;
+					f[j].coords.x = f[j].coords.x - deltaMove;
+					// console.log('new c', f[j].coords.x);
+					puzzle.draw();
+					if (dX >= 0) {
+						clearInterval(animation);
+						puzzle.swapCells(i, j);
+						puzzle.isMoving = false;
+						// console.log('dX > 0 STOP');
+					}
+				}, 1);
+			}
+
+			if (dY > 0) {
+				// console.log('dY > 0');
+				animation = setInterval(function() {
+					dY -= deltaMove;
+					f[j].coords.y = f[j].coords.y + deltaMove;
+					// console.log('new c', f[j].coords.y);
+					puzzle.draw();
+					if (dY <= 0) {
+						clearInterval(animation);
+						puzzle.swapCells(i, j);
+						puzzle.isMoving = false;
+						// console.log('dX > 0 STOP');
+					}
+				}, 1);
+			} else if (dY < 0) {
+				// console.log('dY < 0');
+				animation = setInterval(function() {
+					dY += deltaMove;
+					f[j].coords.y = f[j].coords.y - deltaMove;
+					// console.log('new c', f[j].coords.y);
+					puzzle.draw();
+					if (dY >= 0) {
+						clearInterval(animation);
+						puzzle.swapCells(i, j);
+						puzzle.isMoving = false;
+						// console.log('dX > 0 STOP');
+					}
+				}, 1);
+			}
+			this.isMoving = true;
 		}
-
-		if (dY > 0) {
-			console.log('dY > 0');
-			animation = setInterval(function() {
-				dY -= deltaMove;
-				// console.log(dX);
-				f[j].coords.y = f[j].coords.y + deltaMove;
-				console.log('new c', f[j].coords.y);
-				puzzle.draw();
-				if (dY <= 0) {
-					clearInterval(animation);
-					console.log('dX > 0 STOP');
-				}
-			}, 1);
-		} else if (dY < 0) {
-			console.log('dY < 0');
-			animation = setInterval(function() {
-				dY += deltaMove;
-				// console.log(dX);
-				f[j].coords.y = f[j].coords.y - deltaMove;
-				console.log('new c', f[j].coords.y);
-				puzzle.draw();
-				if (dY >= 0) {
-					clearInterval(animation);
-					console.log('dX > 0 STOP');
-				}
-			}, 1);
-		}
-
-		setTimeout(function() {
-			puzzle.swapCells(i, j);
-		}, puzzle.TWEEN_DURATION * 5);
-		// console.log('dX:', dX, 'dY:', dY);
-		// console.log('dM', deltaMove);
-		// console.log('dX', dX, 'dY', dY);
-		// console.log('EC:', emptyCoords);
-		// console.log('FC:', filledCoords);
-		// var field = this.field,
-		// 	dX = field[i].x - field[j].x,
-		// 	dY = field[i].y - field[j].y,
-		// 	animation = null;
-
-		//  	
-		// var field = this.field,
-		// 	x = field[i].x,
-		// 	w = field[j].x + field[j].width,
-		// 	y = field[i].y,
-		// 	h = field[j].y + field[j].height;
-		// this.context.clearRect(x, y, w, h);
+		// setTimeout(function() {
+		// 	puzzle.swapCells(i, j);
+		// }, puzzle.TWEEN_DURATION * 5);
 	}
 
 	Picpuzzle.prototype.getIndex = function(i, j) {
@@ -287,3 +278,6 @@ function Picpuzzle() {}
 		return coords;
 	}
 })();
+
+// TODO: finish directionsQueue
+// TODO: deal with animating moving

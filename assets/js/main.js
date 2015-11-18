@@ -2,7 +2,7 @@
 
 $(function() {
 	var puzzle = new Picpuzzle();
-	puzzle.startGame(3);
+	puzzle.startGame(4);
 
 	window.addEventListener('keydown', handleKeyPress, false);
 
@@ -14,6 +14,7 @@ $(function() {
 		switch (kc) {
 			case 38:
 				direction = puzzle.DIRECTIONS[0];
+
 				break;
 			case 39:
 				direction = puzzle.DIRECTIONS[1];
@@ -29,5 +30,8 @@ $(function() {
 		if (direction !== '') {
 			puzzle.move(direction);
 		}
+
+		puzzle.directionsQueue.push(direction);
+		console.log(puzzle.directionsQueue);	
 	}
 });
