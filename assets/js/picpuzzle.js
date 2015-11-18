@@ -5,6 +5,7 @@ function Picpuzzle() {}
 (function() {
 	Picpuzzle.prototype.CANVAS_WIDTH = 512;
 	Picpuzzle.prototype.CANVAS_HEIGHT = 512;
+	Picpuzzle.prototype.DIRECTIONS = ['up', 'right', 'down', 'left'];
 	Picpuzzle.prototype.imgSource = '';
 	Picpuzzle.prototype.context = null;
 	Picpuzzle.prototype.field = [];
@@ -84,10 +85,6 @@ function Picpuzzle() {}
 			field[i] = field[newIndex];
 			field[newIndex] = temp;
 		}
-
-		field.forEach(function(item) {
-			console.log(item);
-		});
 	}
 
 	Picpuzzle.prototype.showField = function() {
@@ -112,5 +109,74 @@ function Picpuzzle() {}
 
 	Picpuzzle.prototype.setImageSource = function(source) {
 		this.imgSource = (typeof source === 'undefined' || source === '') ? $('#samplepic').get(0).src : source;
+	}
+
+	Picpuzzle.prototype.move = function(direction) {
+		// console.log(direction);
+		var index = this.getEmptyCell(),
+			length = this.field.length;
+		// console.log(index);
+		console.log('index', index);
+		if (direction === this.DIRECTIONS[0] && // up
+			!(index >= length - this.cols && index < length)) {
+			console.log(this.DIRECTIONS[0]);
+		var newIndex = index - this.cols;
+			// this.swapCells(index, newIndex);
+			// this.draw();
+			this.moveCell(index, newIndex);
+			return;
+		}
+
+		if (direction === this.DIRECTIONS[1] && // right
+			(index % this.rows === this.rows - 1)) {
+			console.log('huy', this.DIRECTIONS[1]);
+			var newIndex = index - 1;
+			console.log('newindex', newIndex);
+			// this.swapCells(index, newIndex);
+			// this.draw();
+			this.moveCell(index, newIndex);
+			return;
+		}
+
+		if (direction === this.DIRECTIONS[2] && // down
+			!(index >= 0 && index < this.cols)) {
+			console.log(this.DIRECTIONS[2]);
+		var newIndex = index + this.cols;
+			// this.swapCells(index, newIndex);
+			// this.draw();
+			this.moveCell(index, newIndex);
+			return;
+		}
+
+		if (direction === this.DIRECTIONS[3] && // left
+			(index % this.rows === 0)) {
+			console.log(this.DIRECTIONS[3]);
+		var newIndex = index + 1;
+			// this.swapCells(index, newIndex);
+			// this.draw();
+			this.moveCell(index, newIndex);
+			return;
+		}
+	}
+
+	Picpuzzle.prototype.moveCell = function(i, j) {
+		this.swapCells(i, j);
+		this.draw();
+	}
+
+	Picpuzzle.prototype.swapCells = function(i, j){
+		console.log('index:', i, 'new:', j);
+		var temp = this.field[i];
+		this.field[i] = this.field[j];
+		this.field[j] = temp;
+	}
+
+	Picpuzzle.prototype.getEmptyCell = function() {
+		var field = this.field;
+		for (var i = 0; i < field.length; i++) {
+			if (field[i].index === -1) {
+				return i;
+			}
+		}
 	}
 })();
