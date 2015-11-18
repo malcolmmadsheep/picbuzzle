@@ -128,7 +128,7 @@ function Picpuzzle() {}
 		}
 
 		if (direction === this.DIRECTIONS[1] && // right
-			(index % this.rows === this.rows - 1)) {
+			(index % this.rows !== 0)) {
 			console.log('huy', this.DIRECTIONS[1]);
 			var newIndex = index - 1;
 			console.log('newindex', newIndex);
@@ -149,7 +149,7 @@ function Picpuzzle() {}
 		}
 
 		if (direction === this.DIRECTIONS[3] && // left
-			(index % this.rows === 0)) {
+			(index % this.rows !== this.cols - 1)) {
 			console.log(this.DIRECTIONS[3]);
 		var newIndex = index + 1;
 			// this.swapCells(index, newIndex);
