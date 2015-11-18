@@ -2,31 +2,32 @@
 
 $(function() {
 	var puzzle = new Picpuzzle();
-	puzzle.startGame(4);
+	puzzle.startGame(3);
 
-	window.addEventListener('keypress', handleKeyPress, false);
+	window.addEventListener('keydown', handleKeyPress, false);
 
 	function handleKeyPress(evt) {
 		var kc = evt.keyCode,
-			direction = 'up';
-		evt.preventDefault();
+			direction = '';
 
-		console.log(kc);
+		// console.log(kc);
 		switch (kc) {
-			case 119:
+			case 38:
 				direction = puzzle.DIRECTIONS[0];
 				break;
-			case 100:
+			case 39:
 				direction = puzzle.DIRECTIONS[1];
 				break;
-			case 115:
+			case 40:
 				direction = puzzle.DIRECTIONS[2];
 				break;
-			case 97:
+			case 37:
 				direction = puzzle.DIRECTIONS[3];
 				break;
 		}
-		console.log(direction);
-		puzzle.move(direction);
+		// console.log(direction);
+		if (direction !== '') {
+			puzzle.move(direction);
+		}
 	}
 });

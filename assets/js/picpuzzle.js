@@ -43,17 +43,15 @@ function Picpuzzle() {}
 		this.imgSource = this.resize(this.imgSource);
 		for (var i = 0; i < this.rows; i++) {
 			for (var j = 0; j < this.cols; j++) {
-				var index = i * this.rows + j;
+				var index = this.getIndex(i, j);
 				var x = j * this.cellW,
 					y = i * this.cellH,
 					image = new Image();
 				image.src = this.imgSource;
-				var k = index;
 				if (index === this.field.length - 1) {
-					k = -1;
 					image = null;
 				}
-				this.field[index] = new ImageCell(k, x, y, this.cellW, this.cellH, image);
+				this.field[index] = new ImageCell(index, x, y, this.cellW, this.cellH, image);
 			}
 		}
 
@@ -67,9 +65,9 @@ function Picpuzzle() {}
 		this.context.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
 		for (var i = 0; i < this.rows; i++) {
 			for (var j = 0; j < this.cols; j++) {
-				index = i * this.rows + j;
+				index = this.getIndex(i, j);
 				cell = this.field[index];
-				if (cell.index !== -1) {
+				if (cell.image !== null) {
 					that.context.drawImage(cell.image, cell.x, cell.y, cell.width, cell.height, j * cell.width, i * cell.height, cell.width, cell.height);
 				}
 			}
@@ -91,12 +89,13 @@ function Picpuzzle() {}
 		var index = -1;
 		for (var i = 0; i < this.rows; i++) {
 			for (var j = 0; j < this.cols; j++) {
-				index = i * this.rows + j;
+				index = this.getIndex(i, j);
 			}
 		}
 	}
 
 	Picpuzzle.prototype.resize = function(source) { // source - string value of image source
+		// console.log(source);
 		var canvas = document.createElement('canvas'),
 			context = canvas.getContext('2d'),
 			image = new Image();
@@ -112,48 +111,34 @@ function Picpuzzle() {}
 	}
 
 	Picpuzzle.prototype.move = function(direction) {
-		// console.log(direction);
 		var index = this.getEmptyCell(),
-			length = this.field.length;
-		// console.log(index);
-		console.log('index', index);
+			length = this.field.length,
+			newIndex = -1;
+
 		if (direction === this.DIRECTIONS[0] && // up
 			!(index >= length - this.cols && index < length)) {
-			console.log(this.DIRECTIONS[0]);
-		var newIndex = index - this.cols;
-			// this.swapCells(index, newIndex);
-			// this.draw();
+			newIndex = index + this.cols;
 			this.moveCell(index, newIndex);
 			return;
 		}
 
 		if (direction === this.DIRECTIONS[1] && // right
 			(index % this.rows !== 0)) {
-			console.log('huy', this.DIRECTIONS[1]);
-			var newIndex = index - 1;
-			console.log('newindex', newIndex);
-			// this.swapCells(index, newIndex);
-			// this.draw();
+			newIndex = index - 1;
 			this.moveCell(index, newIndex);
 			return;
 		}
 
 		if (direction === this.DIRECTIONS[2] && // down
 			!(index >= 0 && index < this.cols)) {
-			console.log(this.DIRECTIONS[2]);
-		var newIndex = index + this.cols;
-			// this.swapCells(index, newIndex);
-			// this.draw();
+			newIndex = index - this.cols;
 			this.moveCell(index, newIndex);
 			return;
 		}
 
 		if (direction === this.DIRECTIONS[3] && // left
 			(index % this.rows !== this.cols - 1)) {
-			console.log(this.DIRECTIONS[3]);
-		var newIndex = index + 1;
-			// this.swapCells(index, newIndex);
-			// this.draw();
+			newIndex = index + 1;
 			this.moveCell(index, newIndex);
 			return;
 		}
@@ -162,21 +147,42 @@ function Picpuzzle() {}
 	Picpuzzle.prototype.moveCell = function(i, j) {
 		this.swapCells(i, j);
 		this.draw();
+		if (this.check()) {
+			console.log('Congratulations!')
+		}
+
 	}
 
-	Picpuzzle.prototype.swapCells = function(i, j){
-		console.log('index:', i, 'new:', j);
+	Picpuzzle.prototype.check = function() {
+		var field = this.field, 
+			length = field.length,
+			result = true;
+		for (var i = 0; i < length; i++) {
+			if (i !== field[i].index) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	Picpuzzle.prototype.swapCells = function(i, j) {
 		var temp = this.field[i];
 		this.field[i] = this.field[j];
 		this.field[j] = temp;
 	}
 
 	Picpuzzle.prototype.getEmptyCell = function() {
-		var field = this.field;
-		for (var i = 0; i < field.length; i++) {
-			if (field[i].index === -1) {
+		var field = this.field,
+			length = field.length;
+		for (var i = 0; i < length; i++) {
+			if (field[i].index === length - 1) {
 				return i;
 			}
 		}
+	}
+
+	Picpuzzle.prototype.getIndex = function(i, j) {
+		return i * this.rows + j;
 	}
 })();
