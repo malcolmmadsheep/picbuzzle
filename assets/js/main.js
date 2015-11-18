@@ -2,5 +2,5 @@
 
 $(function() {
 	var puzzle = new Picpuzzle();
-	puzzle.startGame(8);
+	puzzle.startGame(4);
 });
