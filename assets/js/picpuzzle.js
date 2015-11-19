@@ -113,48 +113,42 @@ function Picpuzzle() {}
 		this.imgSource = (typeof source === 'undefined' || source === '') ? $('#samplepic').get(0).src : source;
 	}
 
-	Picpuzzle.prototype.move = function(direction) {
+	Picpuzzle.prototype.move = function() {
 			var index = this.getEmptyCell(),
 				length = this.field.length,
 				newIndex = -1;
 
-			if (direction === this.DIRECTIONS[0] && // up
-				!(index >= length - this.cols && index < length)) {
-				newIndex = index + this.cols;
-				this.moveCell(index, newIndex);
-				return;
-			}
+			if (!this.isMoving && this.directionsQueue.length !== 0) {
+				var direction = this.directionsQueue[this.directionsQueue.length - 1];
 
-			if (direction === this.DIRECTIONS[1] && // right
-				(index % this.rows !== 0)) {
-				newIndex = index - 1;
-				this.moveCell(index, newIndex);
-				return;
-			}
-
-			if (direction === this.DIRECTIONS[2] && // down
-				!(index >= 0 && index < this.cols)) {
-				newIndex = index - this.cols;
-				this.moveCell(index, newIndex);
-				return;
-			}
-
-			if (direction === this.DIRECTIONS[3] && // left
-				(index % this.rows !== this.cols - 1)) {
-				newIndex = index + 1;
-				this.moveCell(index, newIndex);
-				return;
+				if (direction === this.DIRECTIONS[0] && // up
+					!(index >= length - this.cols && index < length)) {
+					newIndex = index + this.cols;
+					this.moveCell(index, newIndex);
+				} else if (direction === this.DIRECTIONS[1] && // right
+					(index % this.rows !== 0)) {
+					newIndex = index - 1;
+					this.moveCell(index, newIndex);
+				} else if (direction === this.DIRECTIONS[2] && // down
+					!(index >= 0 && index < this.cols)) {
+					newIndex = index - this.cols;
+					this.moveCell(index, newIndex);
+				} else if (direction === this.DIRECTIONS[3] && // left
+					(index % this.rows !== this.cols - 1)) {
+					newIndex = index + 1;
+					this.moveCell(index, newIndex);
+				} else {
+					this.directionsQueue.pop();
+					this.move();
+				}
 			}
 		}
-		// i - index of empty cell, j - filled cell
+
 	Picpuzzle.prototype.moveCell = function(i, j) {
 		this.tweenCell(i, j);
-		// this.swapCells(i, j);
-		// this.draw();
 		if (this.check()) {
 			console.log('Congratulations!')
 		}
-
 	}
 
 	Picpuzzle.prototype.check = function() {
@@ -177,6 +171,10 @@ function Picpuzzle() {}
 
 		this.field[i] = this.field[j];
 		this.field[j] = temp;
+
+		console.log('popped', this.directionsQueue.pop());
+		this.isMoving = false;
+		this.move();
 	}
 
 	Picpuzzle.prototype.getEmptyCell = function() {
@@ -209,7 +207,7 @@ function Picpuzzle() {}
 					if (dX <= 0) {
 						clearInterval(animation);
 						puzzle.swapCells(i, j);
-						puzzle.isMoving = false;
+
 						// console.log('dX > 0 STOP');
 					}
 				}, 1);
@@ -224,7 +222,7 @@ function Picpuzzle() {}
 					if (dX >= 0) {
 						clearInterval(animation);
 						puzzle.swapCells(i, j);
-						puzzle.isMoving = false;
+						// puzzle.isMoving = false;
 						// console.log('dX > 0 STOP');
 					}
 				}, 1);
@@ -240,7 +238,7 @@ function Picpuzzle() {}
 					if (dY <= 0) {
 						clearInterval(animation);
 						puzzle.swapCells(i, j);
-						puzzle.isMoving = false;
+						// puzzle.isMoving = false;
 						// console.log('dX > 0 STOP');
 					}
 				}, 1);
@@ -254,7 +252,7 @@ function Picpuzzle() {}
 					if (dY >= 0) {
 						clearInterval(animation);
 						puzzle.swapCells(i, j);
-						puzzle.isMoving = false;
+						// puzzle.isMoving = false;
 						// console.log('dX > 0 STOP');
 					}
 				}, 1);

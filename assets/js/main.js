@@ -28,8 +28,8 @@ $(function() {
 		}
 		// console.log(direction);
 		if (direction !== '') {
-			puzzle.directionsQueue.push(direction);
-			puzzle.move(direction);
+			puzzle.directionsQueue.unshift(direction);
+			puzzle.move();
 		}
 
 		
