@@ -19,7 +19,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 	Picpuzzle.prototype.CANVAS_HEIGHT = 512;
 	Picpuzzle.prototype.CELL_WIDTH = 0;
 	Picpuzzle.prototype.CELL_HEIGHT = 0;
-	Picpuzzle.prototype.TWEEN_DURATION = 75;
+	Picpuzzle.prototype.TWEEN_DURATION = 25;
 	Picpuzzle.prototype.DIRECTIONS = ['up', 'right', 'down', 'left'];
 	Picpuzzle.prototype.swapCount = 0;
 	Picpuzzle.prototype.imgSource = '';
