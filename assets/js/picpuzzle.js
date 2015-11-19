@@ -316,7 +316,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 
 	// handle finger touch start
 	Picpuzzle.prototype.handleTouchStart = function(evt) {
-		evt.preventDefault();
+		// evt.preventDefault();
 		var c = evt.changedTouches[0];
 		this.startTouchCoords.x = c.screenX;
 		this.startTouchCoords.y = c.screenY;
