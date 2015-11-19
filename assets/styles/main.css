@@ -6,7 +6,7 @@
 	padding: 0;
 }
 body {
-	padding-top: 20px;
+	padding-top: 10px;
 }
 #samplepic {
 	max-width: 100%;
@@ -20,5 +20,5 @@ body {
 	-moz-box-sizing: content-box;
 	box-sizing: content-box;
 	border: 1px solid #000;
-	margin-left: 20px;
+	margin-left: 10px;
 }
