@@ -21,6 +21,8 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 	Picpuzzle.prototype.CELL_HEIGHT = 0;
 	Picpuzzle.prototype.TWEEN_DURATION = 25;
 	Picpuzzle.prototype.DIRECTIONS = ['up', 'right', 'down', 'left'];
+	Picpuzzle.prototype.SECTIONS = null;
+	Picpuzzle.prototype.SECTIONS_NAMES = ['menu', 'game', 'results'];
 	Picpuzzle.prototype.swapCount = 0;
 	Picpuzzle.prototype.imgSource = '';
 	Picpuzzle.prototype.context = null;
@@ -31,24 +33,29 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 	Picpuzzle.prototype.isShuffling = false;
 	Picpuzzle.prototype.directionsQueue = [];
 	Picpuzzle.prototype.startTouchCoords = {};
+	Picpuzzle.prototype.isInitiated = false;
 
 	Picpuzzle.prototype.startGame = function(cellCount) {
 		this.init(cellCount);
 	};
 
 	Picpuzzle.prototype.setupCanvas = function() {
-		var canvas = document.createElement('canvas');
-		canvas.id = 'puzzle';
-		canvas.width = this.CANVAS_WIDTH;
-		canvas.height = this.CANVAS_HEIGHT;
-		this.context = canvas.getContext('2d');
-		document.body.appendChild(canvas);
+		if (this.context === null) {
+			var canvas = document.createElement('canvas');
+			canvas.id = 'puzzle';
+			canvas.width = this.CANVAS_WIDTH;
+			canvas.height = this.CANVAS_HEIGHT;
+			this.context = canvas.getContext('2d');
+			this.SECTIONS.get(1).appendChild(canvas);
+			console.log(this.SECTIONS.get(1));
+		}
 	};
 
 	Picpuzzle.prototype.init = function(cellCount, imgSource) {
 		if (window.innerWidth < this.CANVAS_WIDTH + 100) {
 			this.CANVAS_WIDTH = this.CANVAS_HEIGHT = window.innerWidth - 20;
 		}
+		this.SECTIONS = $('section');
 		this.rows = this.cols = parseInt(cellCount);
 		this.CELL_WIDTH = this.CELL_HEIGHT = Math.floor(this.CANVAS_WIDTH / cellCount);
 		this.field.length = this.rows * this.cols;
@@ -58,6 +65,9 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 		this.setupCanvas();
 		this.setupField();
 		this.draw();
+
+		this.isInitiated = true;
+		this.setActiveSection(this.SECTIONS_NAMES[1]);
 	};
 
 	Picpuzzle.prototype.setupField = function() {
@@ -129,7 +139,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 	}
 
 	Picpuzzle.prototype.setImageSource = function(source) {
-		this.imgSource = (typeof source === 'undefined' || source === '') ? $('#samplepic').get(0).src : source;
+		this.imgSource = (typeof source === 'undefined' || source === '') ? $('#previewpic').get(0).src : source;
 	}
 
 	Picpuzzle.prototype.run = function() {
@@ -199,7 +209,8 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 		this.draw();
 		this.run();
 		if (!this.isShuffling && this.check()) {
-			console.log('Congratulations!')
+			console.log('Congratulations!');
+			this.setActiveSection(this.SECTIONS_NAMES[0]);
 		}
 	}
 
@@ -260,6 +271,10 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 		this.isMoving = true;
 	}
 
+	Picpuzzle.prototype.endGame = function() {
+
+	}
+
 	// return cell id by row and col values
 	Picpuzzle.prototype.getId = function(i, j) {
 		return i * this.rows + j;
@@ -309,44 +324,62 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 				direction = this.DIRECTIONS[3];
 				break;
 		}
-		if (direction !== '') {
+		if (direction !== '' && this.isInitiated) {
 			this.move(direction);
 		}
 	}
 
 	// handle finger touch start
 	Picpuzzle.prototype.handleTouchStart = function(evt) {
-		// evt.preventDefault();
-		var c = evt.changedTouches[0];
-		this.startTouchCoords.x = c.screenX;
-		this.startTouchCoords.y = c.screenY;
+		if (this.context !== null && 
+			evt.target === this.context.canvas) {
+			evt.preventDefault();
+			var c = evt.changedTouches[0];
+			this.startTouchCoords.x = c.screenX;
+			this.startTouchCoords.y = c.screenY;
+		}
 	}
 
 	// handle finger touch end
 	Picpuzzle.prototype.handleTouchEnd = function(evt) {
-		var c = evt.changedTouches[0],
-			endCoords = {
-				x: c.screenX,
-				y: c.screenY
-			},
-			dX = this.startTouchCoords.x - endCoords.x,
-			dY = this.startTouchCoords.y - endCoords.y,
-			direction = '';
-		if (Math.abs(dX) > Math.abs(dY)) {
-			if (dX > 0) {
-				direction = this.DIRECTIONS[3]
-			} else if (dX < 0) {
-				direction = this.DIRECTIONS[1];
+		if (this.context !== null &&
+			evt.target === this.context.canvas) {
+			var c = evt.changedTouches[0],
+				endCoords = {
+					x: c.screenX,
+					y: c.screenY
+				},
+				dX = this.startTouchCoords.x - endCoords.x,
+				dY = this.startTouchCoords.y - endCoords.y,
+				direction = '';
+			if (Math.abs(dX) > Math.abs(dY)) {
+				if (dX > 0) {
+					direction = this.DIRECTIONS[3]
+				} else if (dX < 0) {
+					direction = this.DIRECTIONS[1];
+				}
+			} else {
+				if (dY > 0) {
+					direction = this.DIRECTIONS[0];
+				} else if (dY < 0) {
+					direction = this.DIRECTIONS[2];
+				}
 			}
-		} else {
-			if (dY > 0) {
-				direction = this.DIRECTIONS[0];
-			} else if (dY < 0) {
-				direction = this.DIRECTIONS[2];
+			if (direction !== '' && this.isInitiated) {
+				this.move(direction);
 			}
 		}
-		if (direction !== '') {
-			this.move(direction);
+	}
+
+	Picpuzzle.prototype.setActiveSection = function(sectionId) {
+		var s = this.SECTIONS;
+		for (var i = 0; i < s.length; i++) {
+			var ss = s.get(i);
+			if (ss.id !== sectionId) {
+				$(ss).css('display', 'none');
+			} else {
+				$(ss).fadeIn(750);
+			}
 		}
 	}
 })();

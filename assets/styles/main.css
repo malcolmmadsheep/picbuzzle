@@ -1,24 +1,83 @@
 * {
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
+
 body {
-	padding-top: 10px;
+    width: 100%;
+    height: 100%;
+    /*padding-top: 10px;*/
 }
-#samplepic {
-	max-width: 100%;
-	max-height: 100%;
-	width: 512px;
-	height: 512px;
+
+#menu .content{
+	max-width: 300px;
+	margin: 0 auto;
+	text-align: center;
 }
 
 #puzzle {
-	-webkit-box-sizing: content-box;
-	-moz-box-sizing: content-box;
-	box-sizing: content-box;
-	border: 1px solid #000;
-	margin-left: 10px;
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    border: 1px solid #000;
+    margin-left: 10px;
+}
+
+.start_button,
+input[type="text"],
+input[type="file"] {
+    margin-bottom: 10px;
+}
+
+.file-upload {
+	position: fixed;
+	top: -1000px;
+	display: none;
+}
+
+.load-file-label {
+	display: block;
+	width: 50%;
+	font-size: 20px;
+	padding: 5px 10px;
+	border-radius: 5px;
+	border: 2px solid #4A7DBD;
+	border-bottom: 4px solid #4A7DBD;
+	background: #B7DCED;
+	font-weight: 600;
+	text-transform: uppercase;
+	cursor: pointer;
+	margin: 0 auto;
+	margin-bottom: 10px;
+}
+
+.previewimage {
+	display: block;
+    max-width: 100%;
+    width: 300px;
+    height: 300px;
+    margin: 10px auto;
+}
+
+.collection {
+	width: 60%;
+	height: 100px;
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #000;
+	margin-bottom: 10px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+@media screen and (max-width: 500px) {
+    .previewimage {
+        max-width: 100%;
+        width: 50%;
+        height: auto;
+        margin-top: 5px;
+        margin-left: auto;
+    }
 }

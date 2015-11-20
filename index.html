@@ -1,20 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<title>15pic-puzzle</title>
-	<link rel="stylesheet" href="./assets/styles/main.css">
-	<script src="./bower_components/jquery/dist/jquery.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>15pic-puzzle</title>
+    <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/styles/main.css">
+    <script src="./bower_components/jquery/dist/jquery.js"></script>
 </head>
+
 <body>
-	<img src="./assets/img/p2.jpg" alt="puzzle" id="samplepic" style="display: none;">
-	<input type="text" id="imageUrl" name="imgURL"><button id="startgame">START</button><br />
-	<input type="file" id="fromfile" name="files" accept="image/*"><br />
-	<!-- <input type="file" name="file[]" id="files" multiple> 
-		
-	<script src="./assets/js/cell.js"></script> -->
-	<script src="./assets/js/picpuzzle.js"></script>
-	<script src="./assets/js/main.js"></script>
+    <section id="menu">
+        <img src="./assets/img/p2.jpg" alt="puzzle" id="previewpic" class="previewimage">
+        <div class="collection">
+        </div>
+        <div class="content">
+            <div class="game_settings">
+                <input type="text" id="imageUrl" name="imgURL">
+                <button id="loadpic">START</button>
+                <label class="load-file-label">UPLOAD
+                    <input type="file" id="fromfile" name="files" accept="image/*" class="file-upload">
+                </label>
+                <button id="startgame" class="btn btn-primary disabled start_button" disabled>Start game!</button>
+            </div>
+        </div>
+    </section>
+    <section id="game" style="display: none;">
+        sdfjsklfjskdlj
+    </section>
+    <section id="results" sytle="display: none;">
+    </section>
+    <script src="./assets/js/picpuzzle.js"></script>
+    <script src="./assets/js/main.js"></script>
 </body>
+
 </html>
