@@ -9,27 +9,61 @@
 body {
     width: 100%;
     height: 100%;
-    /*padding-top: 10px;*/
+}
+
+section {
+	text-align: center;
+}
+
+#menu span {
+	display: block;
 }
 
 #menu .content{
 	max-width: 300px;
 	margin: 0 auto;
-	text-align: center;
+}
+
+#menu .content input[type="radio"] {
+	margin-left: 10px;
 }
 
 #puzzle {
+    border: 1px solid #000;
+    margin-left: 10px;
+}
+
+#puzzle, .previewimage {
     -webkit-box-sizing: content-box;
     -moz-box-sizing: content-box;
     box-sizing: content-box;
-    border: 1px solid #000;
-    margin-left: 10px;
+}
+
+#loadpic {
+	text-transform: uppercase;
+	margin-left: -5px;
+	padding: 0 5px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+	border: 1px solid #ADADAD;
+}
+
+.input-source-url {
+	outline: none;
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+	border: 1px solid #C1C1C1;
 }
 
 .start_button,
 input[type="text"],
 input[type="file"] {
     margin-bottom: 10px;
+}
+
+.start_button {
+	display: block;
+	margin: 10px auto 10px auto;
 }
 
 .file-upload {
@@ -60,16 +94,32 @@ input[type="file"] {
     width: 300px;
     height: 300px;
     margin: 10px auto;
+    border: 5px solid #0F6FC5;
 }
 
 .collection {
 	width: 60%;
-	height: 100px;
+	height: 75px;
 	border-top: 1px solid #000;
 	border-bottom: 1px solid #000;
-	margin-bottom: 10px;
-	margin-left: auto;
-	margin-right: auto;
+	margin: 0 auto 10px auto;
+	overflow-x: none;
+	overflow-y: auto;
+}
+
+.collection .prevPic,
+.collection .nextPic {
+	height: 100%;
+	width: 25px;
+	border: 1px solid #FF0D0D;
+}
+
+.collection .prevPic {
+	float: left;
+}
+
+.collection .nextPic {
+	float: right;
 }
 
 @media screen and (max-width: 500px) {
@@ -79,5 +129,10 @@ input[type="file"] {
         height: auto;
         margin-top: 5px;
         margin-left: auto;
+    }
+
+    .collection {
+    	width: 100%;
+    	height: 50px;
     }
 }

@@ -34,6 +34,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 	Picpuzzle.prototype.directionsQueue = [];
 	Picpuzzle.prototype.startTouchCoords = {};
 	Picpuzzle.prototype.isInitiated = false;
+	Picpuzzle.prototype.fontSize = 40;	
 
 	Picpuzzle.prototype.startGame = function(cellCount) {
 		this.init(cellCount);
@@ -58,6 +59,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 		this.SECTIONS = $('section');
 		this.rows = this.cols = parseInt(cellCount);
 		this.CELL_WIDTH = this.CELL_HEIGHT = Math.floor(this.CANVAS_WIDTH / cellCount);
+		this.fontSize = Math.floor(this.CELL_WIDTH / 4);
 		this.field.length = this.rows * this.cols;
 		this.swapCount = 0;
 		this.setImageSource(imgSource);
@@ -104,6 +106,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 				}
 			}
 		}
+		this.drawSwapCountText(this.CANVAS_WIDTH - this.fontSize - 10, 40);
 	}
 
 	Picpuzzle.prototype.shuffle = function() {
@@ -204,10 +207,14 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 	}
 
 	Picpuzzle.prototype.swapEnding = function() {
+		if (!this.isShuffling) {
+			this.swapCount++;
+		}
 		this.directionsQueue.pop();
 		this.isMoving = false;
 		this.draw();
 		this.run();
+
 		if (!this.isShuffling && this.check()) {
 			console.log('Congratulations!');
 			this.setActiveSection(this.SECTIONS_NAMES[0]);
@@ -382,4 +389,15 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 			}
 		}
 	}
+
+	Picpuzzle.prototype.drawSwapCountText = function(x, y) {
+		this.context.moveTo(0, 0);
+		this.context.font = 'bold ' + this.fontSize + 'px Arial';
+		this.context.fillStyle = '#fff';
+		this.context.lineWidth = '5px';
+		this.context.strokeStyle = '#000';
+		this.context.textAlign = 'center';
+		this.context.fillText(this.swapCount, x, y);
+		this.context.strokeText(this.swapCount, x, y);
+	};
 })();

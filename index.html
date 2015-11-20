@@ -13,21 +13,38 @@
 <body>
     <section id="menu">
         <img src="./assets/img/p2.jpg" alt="puzzle" id="previewpic" class="previewimage">
+        <span>Select picture from collection:</span>
         <div class="collection">
+        <div class="prevPic">&lt;</div>
+        <div class="nextPic">&gt;</div>
         </div>
         <div class="content">
             <div class="game_settings">
-                <input type="text" id="imageUrl" name="imgURL">
-                <button id="loadpic">START</button>
-                <label class="load-file-label">UPLOAD
+                <span>Or get get by URL:</span>
+                <input type="text" id="imageUrl" name="imgURL" class="input-source-url">
+                <button id="loadpic">Get</button>
+                <span>Or upload picture from local storage:</span>
+                <label class="load-file-label">Upload
                     <input type="file" id="fromfile" name="files" accept="image/*" class="file-upload">
+                </label>
+                Select level:
+                <label>
+                    <input type="radio" value="3" name="complexity" checked>3
+                </label>
+                <label>
+                    <input type="radio" value="4" name="complexity">4
+                </label>
+                <label>
+                    <input type="radio" value="5" name="complexity">5
+                </label>
+                <label>
+                    <input type="radio" value="6" name="complexity">6
                 </label>
                 <button id="startgame" class="btn btn-primary disabled start_button" disabled>Start game!</button>
             </div>
         </div>
     </section>
     <section id="game" style="display: none;">
-        sdfjsklfjskdlj
     </section>
     <section id="results" sytle="display: none;">
     </section>

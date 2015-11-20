@@ -9,7 +9,7 @@ $(function() {
 		startBtn = $('#startgame'),
 		sections = $('section');
 
-		document.getElementById('previewpic').onloadstart = function() {
+	document.getElementById('previewpic').onloadstart = function() {
 		console.log('loading starg');
 	}
 
@@ -52,26 +52,12 @@ $(function() {
 
 	addEventListeners(window, puzzle);
 	preview.on('load', function(evt) {
-		// puzzle.startGame(4);
-		console.log('loaded');
 		startBtn.prop('disabled', false).removeClass('disabled');
 	});
 
 	function blockButton() {
 		startBtn.prop('disabled', true).addClass('disabled');
 	}
-
-
-
-	// preview.on('loadstart', function(evt) {
-	// 	console.log('loading started');
-	// 	startBtn.prop('disabled', true).addClass('disabled');
-	// });
-	
-	// .addEventListener('loadstart', function(evt) {
-	// 	console.log('start loading');
-	// }, false);
-
 
 	startBtn.on('click', function(evt) {
 		puzzle.startGame(3);
