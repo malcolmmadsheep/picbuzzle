@@ -14,7 +14,8 @@ $(function() {
 		collWitdth = 0,
 		nextPicBtn = $('#nextPic'),
 		prevPicBtn = $('#prevPic'),
-		collectionItems = $('.collection-item');
+		collectionItems = $('.collection-item'),
+		startX = 0;
 
 	complexity.on('change', setLevel);
 	files.on('change', handleFileUploading);
@@ -31,6 +32,9 @@ $(function() {
 
 	$(collectionItems[0]).click();
 
+	colil.on('touchstart', slideCollectionTouch);
+	colil.on('touchend', slideCollectionTouch);
+
 	function selectItem(evt) {
 		var t = evt.target,
 			src = t.src;
@@ -43,6 +47,28 @@ $(function() {
 
 		$(t).addClass('selected-item');
 		preview.prop('src', src);
+	}
+
+	function slideCollectionTouch(evt) {
+		var type = evt.type,
+			original = evt.originalEvent.changedTouches[0];
+		if (type === "touchstart") {
+			startX = original.screenX;
+		} else if (type === "touchend") {
+			var deltaX = original.screenX - startX,
+				items = $('#items'),
+				left = parseInt(items.css('left')),
+				delta = 60,
+				tWidth = colil.width();
+
+			if (deltaX > 0 && left < 0) {
+				left += delta;
+			} else if (deltaX < 0 && (collWitdth - Math.abs(left)) > tWidth) {
+				left -= delta;
+			}
+
+			items.css('left', left);
+		}
 	}
 
 
@@ -69,6 +95,10 @@ $(function() {
 			target = $(target).parents('div').get(0);
 		}
 
+		if (type !== 'wheel') {
+			delta = 50;
+		}
+
 		if ((original.deltaY < 0 && type === 'wheel') || $(target).get(0) == prevPicBtn.get(0)) {
 			if (left < 0) {
 				left += delta;
@@ -83,7 +113,6 @@ $(function() {
 
 	function setLevel(evt) {
 		level = parseInt(evt.target.value);
-		console.log(level);
 	}
 
 	function handleFileUploading(evt) {
