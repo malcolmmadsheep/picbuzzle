@@ -9,7 +9,12 @@ $(function() {
 		startBtn = $('#startgame'),
 		sections = $('section'),
 		complexity = $('input[name="complexity"'),
-		level = 3;
+		level = 3,
+		colil = $('#colil'),
+		collWitdth = 0,
+		nextPicBtn = $('#nextPic'),
+		prevPicBtn = $('#prevPic'),
+		collectionItems = $('.collection-item');
 
 	complexity.on('change', setLevel);
 	files.on('change', handleFileUploading);
@@ -18,7 +23,27 @@ $(function() {
 	startBtn.on('click', handleStartClick);
 	addEventListeners(window, puzzle);
 	setCollectionListLength();
+	colil.on('wheel', slideCollection);
+	nextPicBtn.on('mousedown', slideCollection);
+	prevPicBtn.on('mousedown', slideCollection);
 
+	collectionItems.on('click', selectItem);
+
+	$(collectionItems[0]).click();
+
+	function selectItem(evt) {
+		var t = evt.target,
+			src = t.src;
+		for (var i = 0; i < collectionItems.length; i++) {
+			var item = $(collectionItems[i]);
+			if (item.hasClass('selected-item')) {
+				item.removeClass('selected-item');
+			}
+		}
+
+		$(t).addClass('selected-item');
+		preview.prop('src', src);
+	}
 
 
 	function addEventListeners(to, toBind) {
@@ -29,6 +54,31 @@ $(function() {
 
 	function handleStartClick() {
 		puzzle.startGame(level);
+	}
+
+	function slideCollection(evt) {
+		var original = evt.originalEvent,
+			target = evt.target,
+			type = evt.type,
+			items = $('#items'),
+			left = parseInt(items.css('left')),
+			delta = 15,
+			tWidth = colil.width();
+
+		if (target.localName === 'span') {
+			target = $(target).parents('div').get(0);
+		}
+
+		if ((original.deltaY < 0 && type === 'wheel') || $(target).get(0) == prevPicBtn.get(0)) {
+			if (left < 0) {
+				left += delta;
+			}
+		} else if ((original.deltaY > 0 && type === 'wheel') || $(target).get(0) == nextPicBtn.get(0)) {
+			if (collWitdth - Math.abs(left) > tWidth) {
+				left -= delta;
+			}
+		}
+		items.css('left', left);
 	}
 
 	function setLevel(evt) {
@@ -83,9 +133,9 @@ $(function() {
 			ichild = items.children(),
 			ilength = ichild.length;
 		if (ilength > 5) {
-			var width = ilength * parseInt($(ichild[0]).width()) + (ilength - 1) * parseInt($(ichild[0]).css('marginRight'));
-		items.width(width);
+			collWitdth = ilength * parseInt($(ichild[0]).width()) + (ilength - 1) * parseInt($(ichild[0]).css('marginRight'));
+			items.width(collWitdth);
 		}
-		
+
 	}
 });

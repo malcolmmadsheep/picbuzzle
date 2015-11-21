@@ -61,7 +61,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         this.rows = this.cols = parseInt(level);
         this.CELL_WIDTH = this.CELL_HEIGHT = Math.floor(this.CANVAS_WIDTH / level);
         console.log(this.rows, this.cols, level);
-        this.fontSize = Math.floor(this.CELL_WIDTH / 4);
+        this.fontSize = Math.floor(this.CELL_WIDTH / 3);
         this.field.length = this.rows * this.cols;
         this.swapCount = 0;
         this.setImageSource();
