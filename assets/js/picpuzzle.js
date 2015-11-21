@@ -36,6 +36,8 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
     Picpuzzle.prototype.isInitiated = false;
     Picpuzzle.prototype.fontSize = 40;
     Picpuzzle.prototype.level = 3;
+    Picpuzzle.prototype.isSolved = false;
+    Picpuzzle.prototype.needText = true;
 
     Picpuzzle.prototype.startGame = function(level) {
         this.init(level);
@@ -59,6 +61,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         }
         this.SECTIONS = $('section');
         this.level = level;
+        this.needText = true;
         this.rows = this.cols = parseInt(level);
         this.CELL_WIDTH = this.CELL_HEIGHT = Math.floor(this.CANVAS_WIDTH / level);
         this.fontSize = Math.floor(this.CELL_WIDTH / 3);
@@ -108,7 +111,9 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
                 }
             }
         }
-        this.drawSwapCountText(this.CANVAS_WIDTH - this.fontSize - 10, this.fontSize + 5);
+        if (this.needText) {
+            this.drawSwapCountText(this.CANVAS_WIDTH - this.fontSize - 10, this.fontSize + 5);
+        }
     }
 
     Picpuzzle.prototype.shuffle = function() {
@@ -218,7 +223,8 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         this.run();
 
         if (!this.isShuffling && this.check()) {
-            this.setActiveSection(this.SECTIONS_NAMES[0]);
+            this.isSolved = true;
+            this.displayResults();
         }
     }
 
@@ -391,6 +397,22 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         }
     }
 
+    Picpuzzle.prototype.displayResults = function() {
+        var id = this.SECTIONS_NAMES.indexOf('results'),
+            conclusion = 'CONGRATULATIONS! YOU\'VE BEEN SOLVED THIS BUZZLE!';
+        this.setActiveSection(this.SECTIONS_NAMES[id]);
+        if (!this.isSolved) {
+            this.needText = false;
+            this.draw();
+            this.imgSource = this.context.canvas.toDataURL();
+            conclusion = 'Oh, I think you\'ve tried not enough! Push "AGAIN" button and show me that you\'re the BEST!';
+        }
+
+        $('#resultImage').prop('src', this.imgSource);
+        $('#swapnumber').text(this.swapCount);
+        $('#conclusion').text(conclusion);
+    }
+
     Picpuzzle.prototype.drawSwapCountText = function(x, y) {
         this.context.moveTo(0, 0);
         this.context.font = 'bold ' + this.fontSize + 'px Arial';
@@ -401,4 +423,12 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         this.context.fillText(this.swapCount, x, y);
         this.context.strokeText(this.swapCount, x, y);
     };
+
+    Picpuzzle.prototype.handleToResultBtnClick = function(evt) {
+        this.displayResults();
+    }
+
+    Picpuzzle.prototype.handleAgainBtnClick = function(evt) {
+        this.setActiveSection('menu');
+    }
 })();

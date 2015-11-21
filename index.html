@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>15pic-puzzle</title>
+    <title>Picbuzzle</title>
     <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/styles/main.css">
     <script src="./bower_components/jquery/dist/jquery.js"></script>
 </head>
 
 <body>
-    <h1 class="title">Picpuzzle</h1>
+    <h1 class="title">Picbuzzle</h1>
     <section id="menu">
         <img src="" alt="puzzle" id="previewpic" class="previewimage">
         <span>Select picture from collection:</span>
@@ -64,7 +64,13 @@
     <section id="game" style="display: none;">
     	<button class="btn btn-primary to_res_btn" id="toResultsBtn">To Results</button>
     </section>
-    <section id="results" sytle="display: none;">
+    <section id="results" style="display: none;">
+    	<img id="resultImage" alt="Result image" src="" class="previewimage"/>
+    	<h3>You've made</h3>
+    	<h1 id="swapnumber" class="swnum"></h1>
+    	<h3>swaps</h3>
+    	<h4 id="conclusion"></h4>
+    	<button class="btn btn-primary" id="againBtn">AGAIN!</button>
     </section>
     <script src="./assets/js/picpuzzle.js"></script>
     <script src="./assets/js/main.js"></script>

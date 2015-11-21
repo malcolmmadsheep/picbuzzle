@@ -15,7 +15,9 @@ $(function() {
 		nextPicBtn = $('#nextPic'),
 		prevPicBtn = $('#prevPic'),
 		collectionItems = $('.collection-item'),
-		startX = 0;
+		startX = 0,
+		trb = $('#toResultsBtn'),
+		againBtn = $('#againBtn'); // 
 
 	complexity.on('change', setLevel);
 	files.on('change', handleFileUploading);
@@ -29,6 +31,9 @@ $(function() {
 	prevPicBtn.on('mousedown', slideCollection);
 
 	collectionItems.on('click', selectItem);
+
+	trb.on('click', puzzle.handleToResultBtnClick.bind(puzzle));
+	againBtn.on('click', puzzle.handleAgainBtnClick.bind(puzzle));
 
 	$(collectionItems[0]).click();
 
