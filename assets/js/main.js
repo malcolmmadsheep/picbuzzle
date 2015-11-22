@@ -11,24 +11,25 @@ $(function() {
 		complexity = $('input[name="complexity"'),
 		level = 3,
 		colil = $('#colil'),
-		collWitdth = 0,
+		collWidth = 0,
 		nextPicBtn = $('#nextPic'),
 		prevPicBtn = $('#prevPic'),
 		collectionItems = $('.collection-item'),
 		startX = 0,
 		trb = $('#toResultsBtn'),
-		againBtn = $('#againBtn'); // 
-
+		againBtn = $('#againBtn'),
+		startPos = $(collectionItems[0]).get(0).x; // 
+	setCollectionListLength();
 	complexity.on('change', setLevel);
 	files.on('change', handleFileUploading);
 	getImgBtn.on('click', handleLoadingImageFromURL);
 	preview.on('load', unblockButton);
 	startBtn.on('click', handleStartClick);
 	addEventListeners(window, puzzle);
-	setCollectionListLength();
+
 	colil.on('wheel', slideCollection);
-	nextPicBtn.on('mousedown', slideCollection);
-	prevPicBtn.on('mousedown', slideCollection);
+	nextPicBtn.on('mousedown', changeSelectedItem);
+	prevPicBtn.on('mousedown', changeSelectedItem);
 
 	collectionItems.on('click', selectItem);
 
@@ -68,7 +69,7 @@ $(function() {
 
 			if (deltaX > 0 && left < 0) {
 				left += delta;
-			} else if (deltaX < 0 && (collWitdth - Math.abs(left)) > tWidth) {
+			} else if (deltaX < 0 && (collWidth - Math.abs(left)) > tWidth) {
 				left -= delta;
 			}
 
@@ -104,16 +105,52 @@ $(function() {
 			delta = 50;
 		}
 
-		if ((original.deltaY < 0 && type === 'wheel') || $(target).get(0) == prevPicBtn.get(0)) {
-			if (left < 0) {
-				left += delta;
-			}
-		} else if ((original.deltaY > 0 && type === 'wheel') || $(target).get(0) == nextPicBtn.get(0)) {
-			if (collWitdth - Math.abs(left) > tWidth) {
+		if (original.deltaY < 0 && type === 'wheel' && left < 0) {
+			left += delta;
+		} else if ((original.deltaY > 0 && type === 'wheel')) {
+			if (collWidth - Math.abs(left) > tWidth) {
 				left -= delta;
 			}
 		}
 		items.css('left', left);
+	}
+
+	function changeSelectedItem(evt) {
+		var id = getSelectedItemId(),
+			target = evt.target,
+			items = $('#items'),
+			left = parseInt(items.css('left')),
+			delta = 0;
+		if (target.tagName.toLowerCase() === 'span') {
+			target = $(target).parents('div').get(0);
+		}
+
+		var item = $(collectionItems[id]),
+			delta = 0;
+		item.removeClass('selected-item');
+		if (target.id === 'nextPic' && id + 1 < collectionItems.length) {
+			id++;
+			left -= (item.outerWidth() + parseInt(item.parents('li').css('marginRight')));
+		} else if (target.id === 'prevPic' && id > 0) {
+			id--;
+			left += (item.outerWidth() + parseInt(item.parents('li').css('marginRight')));
+		}
+
+		item = $(collectionItems[id])
+		var src = item.prop('src'),
+			tX = item.get(0).x;
+		// console.log(tX - startPos);
+
+		$(collectionItems[id]).addClass('selected-item');
+		preview.prop('src', src);
+		items.animate({
+			'left': left
+		}, 500, function() {
+			console.log('animated');
+		});
+
+		console.log(colil.css('left'));
+
 	}
 
 	function setLevel(evt) {
@@ -131,6 +168,15 @@ $(function() {
 		if (file) {
 			blockButton();
 			reader.readAsDataURL(file);
+		}
+	}
+
+	function getSelectedItemId() {
+		for (var i = 0; i < collectionItems.length; i++) {
+			var item = $(collectionItems[i]);
+			if (item.hasClass('selected-item')) {
+				return i;
+			}
 		}
 	}
 
@@ -167,8 +213,11 @@ $(function() {
 			ichild = items.children(),
 			ilength = ichild.length;
 		if (ilength > 5) {
-			collWitdth = ilength * parseInt($(ichild[0]).width()) + (ilength - 1) * parseInt($(ichild[0]).css('marginRight'));
-			items.width(collWitdth);
+			for (var i = 0; i < ilength; i++) {
+				var item = $(ichild.get(i));
+				collWidth += item.outerWidth() + parseInt(item.css('marginRight'));
+			}
+			items.width(collWidth);
 		}
 
 	}
