@@ -425,6 +425,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
     };
 
     Picpuzzle.prototype.handleToResultBtnClick = function(evt) {
+        this.isSolved = false;
         this.displayResults();
     }
 

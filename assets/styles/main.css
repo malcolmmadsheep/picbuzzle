@@ -203,6 +203,10 @@ input[type="file"] {
 	font-weight: 600;
 }
 
+.concl {
+	padding: 0 10px;
+}
+
 @media screen and (max-width: 500px) {
     .previewimage {
         max-width: 100%;
