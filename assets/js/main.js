@@ -26,7 +26,7 @@ $(function() {
 	complexity.on('change', setLevel);
 	files.on('change', handleFileUploading);
 
-	previewImage.on('load', handlePreviewImageSuccessfulLoading );
+	previewImage.on('load', handlePreviewImageSuccessfulLoading);
 	previewImage.on('error', handlePreviewImageErrorLoading);
 
 	window.addEventListener('keydown', puzzle.handleKeyInput.bind(puzzle), false);
@@ -49,48 +49,78 @@ $(function() {
 	$(collectionItems[0]).click();
 
 	function selectItem(evt) {
-		var newItem = evt.target;
+		var newItem = evt.target,
+			prevItemId = getSelectedItemId(),
+			newLeft,
+			currentItemId = prevItemId,
+			countOfElements = collectionItems.length;
 
 		deselectCollectionItems();
 		makeSelected(newItem);
 
+		currentItemId = getSelectedItemId();
 
-		// console.log(newItem);
-		// var previousSelectedId = getSelectedItemId(),
-		// 	t = evt.target,
-		// 	src = t.src,
-		// 	tWidth = collectionItemsList.outerWidth(),
-		// 	aWidth = colil.outerWidth(),
-		// 	isEnd = false,
-		// 	prevOffset = $(collectionItems[previousSelectedId]).offsetLeft;
+		if (currentItemId > 1) {
+			newLeft = collectionItems.get(currentItemId - 2).offsetLeft;
+		} else if (currentItemId === 1) {
+			newLeft = collectionItems.get(0).offsetLeft;
+		}
 
-		// deselectCollectionItems();
-		// $(t).addClass('selected-item');
-		// var newSelectedId = getSelectedItemId(),
-		// 	newOffset = t.offsetLeft;
+		if (collWidth - colil.width() < newLeft) {
+			newLeft = collWidth - colil.width();
+		}
 
-		// 	console.log('no', previousSelectedId);
-		// 	console.log('po', prevOffset);
-		// if (id !== 0) {
-		// 	prevOffset = $(collectionItems[id - 1]).get(0).offsetLeft
-		// }
-
-		// previewImage.prop('src', src);
-
-		// if (tWidth - prevOffset < aWidth) {
-		// 	isEnd = true;
-		// }
-		// // console.log(tWidth, '-', prevOffset, '=', aWidth);
-
-		// if (!isEnd) {
-		// 	collectionItemsList.animate({
-		// 		'left': -prevOffset
-		// 	}, 500);
-		// }
+		collectionItemsList.animate({
+			'left': -newLeft
+		}, 250);
 		previewImage.prop('src', $(newItem).prop('src'));
 	}
 
 	function changeSelectedItem(evt) {
+		var currentId = getSelectedItemId(),
+			t = $(evt.target),
+			newId = currentId,
+			offset;
+		if (!t.is('div')) {
+			t = $(t.parents('div').get(0));
+		}
+		deselectCollectionItems();
+
+		var tId = t.prop('id');
+		if (tId === 'nextPic') {
+			if (currentId < collectionItems.length - 1) {
+				newId = currentId + 1;
+				if (newId > 1) {
+					offset = $(collectionItems[newId - 2]).get(0).offsetLeft;
+				} else if (newId === 1) {
+					offset = $(collectionItems[0]).get(0).offsetLeft;
+				}
+			}
+		} else {
+			if (currentId > 0) {
+				newId = currentId - 1;
+				if (newId > 1) {
+					offset = $(collectionItems[newId - 2]).get(0).offsetLeft;
+				} else if (newId === 1) {
+					offset = $(collectionItems[0]).get(0).offsetLeft;
+				}
+			}
+		}
+		console.log(newId);
+		var newItem = $(collectionItems[newId]).get(0);
+		console.log('wtf');
+
+		makeSelected(newItem);
+		previewImage.prop('src', newItem.src);
+		if (offset > collWidth - colil.width()) {
+			offset = collWidth - colil.width();
+		}
+		collectionItemsList.animate({
+			'left': -offset
+		}, 500);
+		// if (whichButton.tagName.toLowerCase() === 'span') {
+
+		// }
 		// var currentItemId = getSelectedItemId(),
 		// 	target = evt.target,
 		// 	left = parseInt(collectionItemsList.css('left')),
@@ -163,18 +193,19 @@ $(function() {
 		} else if (type === "touchend") {
 			var deltaX = original.screenX - startX,
 				left = parseInt(collectionItemsList.css('left')),
-				delta = 100,
 				tWidth = colil.width();
+			left += deltaX;
 
-			if (deltaX > 0 && left < 0) {
-				left += delta;
-			} else if (deltaX < 0 && (collWidth - Math.abs(left)) > tWidth) {
-				left -= delta;
+			if (left > 0) {
+				left = 0;
+
+			} else if (collWidth - tWidth < Math.abs(left)) {
+				left = tWidth - collWidth;
 			}
 
 			collectionItemsList.animate({
 				'left': left
-			}, 200);
+			}, 350);
 		}
 	}
 
@@ -223,6 +254,7 @@ $(function() {
 	function handleFileUploading(evt) {
 		var file = evt.target.files[0],
 			reader = new FileReader();
+		deselectCollectionItems();
 
 		reader.addEventListener('loadend', function(evt) {
 			previewImage.attr('src', reader.result);
@@ -233,8 +265,6 @@ $(function() {
 			reader.readAsDataURL(file);
 		}
 	}
-
-
 
 	function handleLoadingImageFromURL(evt) {
 		var source = imageURLBox.val().trim();
@@ -253,6 +283,7 @@ $(function() {
 				previewImage.attr('src', response[0].data);
 			}
 		});
+		deselectCollectionItems();
 	}
 
 	function blockButton() {
@@ -264,14 +295,24 @@ $(function() {
 	}
 
 	function setCollectionListWidth() {
-		var ichild = collectionItemsList.children().toArray();
+		var ichild = collectionItemsList.children().toArray(),
+			item = $(ichild[0]),
+			defaultWidth = item.outerWidth() + parseInt(item.css('marginRight')),
+			i = 1;
+		while (defaultWidth === 0) {
+			defaultWidth = $(ichild[i]).outerWidth() + parseInt($(ichild[i]).css('marginRight')) / ichild.length;
+			i++;
+		}
 		if (ichild.length > 5) {
 			ichild.forEach(function(item) {
-				collWidth += $(item).outerWidth() + parseInt($(item).css('marginRight'));
+				var ow = $(item).outerWidth();
+				if (ow === 0) {
+					ow = defaultWidth;
+				}
+				collWidth += ow + parseInt($(item).css('marginRight'));
 			});
 			collectionItemsList.width(collWidth);
 		}
-
 	}
 
 	function handlePreviewImageSuccessfulLoading(evt) {
@@ -301,8 +342,8 @@ $(function() {
 
 	function getSelectedItemId() {
 		for (var i = 0; i < collectionItems.length; i++) {
-			var item = $(collectionItems[i]);
-			if (item.hasClass('selected-item')) {
+			var item = collectionItems[i];
+			if ($(item).hasClass('selected-item')) {
 				return i;
 			}
 		}

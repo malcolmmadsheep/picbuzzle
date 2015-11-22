@@ -216,10 +216,19 @@ input[type="file"] {
 
 .swnum {
 	font-weight: 600;
+	margin: 0;
+}
+
+#result_title {
+	margin: 0;
 }
 
 .concl {
 	padding: 0 10px;
+}
+
+#results h3 {
+	margin: 0;
 }
 
 @media screen and (max-width: 500px) {

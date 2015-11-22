@@ -50,21 +50,20 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
             canvas.width = this.CANVAS_WIDTH;
             canvas.height = this.CANVAS_HEIGHT;
             this.context = canvas.getContext('2d');
-            // this.SECTIONS.get(1).appendChild(canvas);
             $(canvas).insertBefore('#toResultsBtn');
         }
     };
 
     Picpuzzle.prototype.init = function(level) {
         if (window.innerWidth < this.CANVAS_WIDTH + 100) {
-            this.CANVAS_WIDTH = this.CANVAS_HEIGHT = window.innerWidth - 20;
+            this.CANVAS_WIDTH = this.CANVAS_HEIGHT = Math.ceil(window.innerWidth - 25);
         }
         this.SECTIONS = $('section');
         this.level = level;
         this.needText = true;
         this.rows = this.cols = parseInt(level);
         this.CELL_WIDTH = this.CELL_HEIGHT = Math.floor(this.CANVAS_WIDTH / level);
-        this.fontSize = Math.floor(this.CELL_WIDTH / 3);
+        this.fontSize = Math.ceil(this.CELL_WIDTH / 3);
         this.field.length = this.rows * this.cols;
         this.swapCount = 0;
         this.setImageSource();
@@ -100,8 +99,6 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
             cell = null,
             that = this;
         this.context.canvas.width = this.context.canvas.width;
-        this.context.fillStyle = '#fff';
-        this.context.fillRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
         for (var i = 0; i < this.rows; i++) {
             for (var j = 0; j < this.cols; j++) {
                 id = this.getId(i, j);
@@ -399,16 +396,18 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 
     Picpuzzle.prototype.displayResults = function() {
         var id = this.SECTIONS_NAMES.indexOf('results'),
-            conclusion = 'CONGRATULATIONS! YOU\'VE BEEN SOLVED THIS BUZZLE!';
+            conclusion = 'YOU\'VE BEEN SOLVED THIS BUZZLE!',
+            resultTitle = 'CONGRATULATIONS!'
         this.setActiveSection(this.SECTIONS_NAMES[id]);
         if (!this.isSolved) {
             this.needText = false;
             this.draw();
             this.imgSource = this.context.canvas.toDataURL();
             conclusion = 'Oh, I think you\'ve tried not enough! Push "AGAIN" button and show me that you\'re the BEST!';
+            resultTitle = 'What a pitty!';
         }
-
         $('#resultImage').prop('src', this.imgSource);
+        $('#result_title').text(resultTitle);
         $('#swapnumber').text(this.swapCount);
         $('#conclusion').text(conclusion);
     }
