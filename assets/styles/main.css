@@ -34,6 +34,17 @@ section {
     display: block;
 }
 
+#imgloadingfail {
+	width: 300px;
+	height: 175px;
+	padding: 0 10px;
+	margin: 10px auto;
+}
+
+#imgloadingfail h1 {
+	color: #f00;
+}
+
 #menu .content {
     max-width: 300px;
     margin: 0 auto;
@@ -64,6 +75,7 @@ section {
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
     border: 1px solid #C1C1C1;
+    padding-left: 5px;
 }
 
 #loadpic,
@@ -124,7 +136,6 @@ input[type="file"] {
     width: 250px;
     height: 250px;
     margin: 10px auto;
-    border: 5px solid #0F6FC5;
 }
 
 .collection {
@@ -135,17 +146,21 @@ input[type="file"] {
 
 .collection-items-list {
     height: 100%;
-    max-width: 80%;
+    width: 80%;
     margin: 0;
     overflow: hidden;
 }
 
-.collection-items-list ul {
+.collection-items-list ul#items {
     height: 100%;
     width: 100%;
     list-style: none;
     position: relative;
     left: 0;
+}
+
+.borderedpi {
+	border: 5px solid #0F6FC5;
 }
 
 .collection-items-list ul>li {
@@ -229,6 +244,11 @@ input[type="file"] {
 @media screen and (max-width: 450px) and (max-height: 525px) {
     h1.title {
         font-size: 14pt;
+        margin-bottom: 0;
+    }
+
+    #previewpic {
+    	margin-bottom: 0;
     }
 }
 

@@ -2,57 +2,148 @@
 
 $(function() {
 	var puzzle = new Picpuzzle(),
-		preview = $('#previewpic'),
-		getImgBtn = $('#loadpic'),
-		imgUrl = $('#imageUrl'),
+		level = 3,
+		collWidth = 0,
+		startX = 0,
+		collectionItemsList = $('#items'),
+		previewImage = $('#previewpic'),
+		getImageByURLButton = $('#loadpic'),
+		imageURLBox = $('#imageUrl'),
 		files = $('#fromfile'),
-		startBtn = $('#startgame'),
+		startGameButton = $('#startgame'),
 		sections = $('section'),
 		complexity = $('input[name="complexity"'),
-		level = 3,
 		colil = $('#colil'),
-		collWidth = 0,
-		nextPicBtn = $('#nextPic'),
-		prevPicBtn = $('#prevPic'),
-		collectionItems = $('.collection-item'),
-		startX = 0,
-		trb = $('#toResultsBtn'),
+		toResultButton = $('#toResultsBtn'),
 		againBtn = $('#againBtn'),
-		startPos = $(collectionItems[0]).get(0).x; // 
-	setCollectionListLength();
+		toNextPictureButton = $('#nextPic'),
+		toPrevPictruveButton = $('#prevPic'),
+		collectionItems = $('.collection-item'),
+		imageFailLoadingBox = $('#imgloadingfail');
+
+	setCollectionListWidth();
 	complexity.on('change', setLevel);
 	files.on('change', handleFileUploading);
-	getImgBtn.on('click', handleLoadingImageFromURL);
-	preview.on('load', unblockButton);
-	startBtn.on('click', handleStartClick);
-	addEventListeners(window, puzzle);
+	
+	previewImage.on('load', handlePreviewImageSuccessLoading);
+	previewImage.on('error', handlePreviewImageErrorLoading);
+
+	window.addEventListener('keydown', puzzle.handleKeyInput.bind(puzzle), false);
+	window.addEventListener('touchstart', puzzle.handleTouchStart.bind(puzzle), false);
+	window.addEventListener('touchend', puzzle.handleTouchEnd.bind(puzzle), false);
+
+	toNextPictureButton.on('mousedown', changeSelectedItem);
+	toPrevPictruveButton.on('mousedown', changeSelectedItem);
+
+	startGameButton.on('click', handleStartClick);
+	getImageByURLButton.on('click', handleLoadingImageFromURL);
+	toResultButton.on('click', puzzle.handleToResultBtnClick.bind(puzzle));
+	againBtn.on('click', puzzle.handleAgainBtnClick.bind(puzzle));
 
 	colil.on('wheel', slideCollection);
-	nextPicBtn.on('mousedown', changeSelectedItem);
-	prevPicBtn.on('mousedown', changeSelectedItem);
-
+	colil.on('touchstart', slideCollectionTouch);
+	colil.on('touchend', slideCollectionTouch);
 	collectionItems.on('click', selectItem);
-
-	trb.on('click', puzzle.handleToResultBtnClick.bind(puzzle));
-	againBtn.on('click', puzzle.handleAgainBtnClick.bind(puzzle));
 
 	$(collectionItems[0]).click();
 
-	colil.on('touchstart', slideCollectionTouch);
-	colil.on('touchend', slideCollectionTouch);
-
 	function selectItem(evt) {
-		var t = evt.target,
-			src = t.src;
-		for (var i = 0; i < collectionItems.length; i++) {
-			var item = $(collectionItems[i]);
-			if (item.hasClass('selected-item')) {
-				item.removeClass('selected-item');
-			}
+		var currentItemId = getSelectedItemId(),
+			t = evt.target,
+			src = t.src,
+			tWidth = collectionItemsList.outerWidth(),
+			aWidth = colil.outerWidth(),
+			isEnd = false;
+		deselectCollectionItems();
+		// if (t.tagName.toLov === 'li') {
+		// 	t = $(t).children('img');
+		// }
+		console.log(t);
+		$(t).addClass('selected-item');
+		var id = getSelectedItemId(),
+			prevOffset = $(collectionItems[id]).get(0).offsetLeft;
+		if (id !== 0) {
+			prevOffset = $(collectionItems[id - 1]).get(0).offsetLeft
 		}
 
-		$(t).addClass('selected-item');
-		preview.prop('src', src);
+		previewImage.prop('src', src);
+
+		if (tWidth - prevOffset < aWidth) {
+			isEnd = true;
+		}
+		// console.log(tWidth, '-', prevOffset, '=', aWidth);
+
+		if (!isEnd) {
+			collectionItemsList.animate({
+				'left': -prevOffset
+			}, 500);
+		}
+
+	}
+
+	function changeSelectedItem(evt) {
+		var currentItemId = getSelectedItemId(),
+			target = evt.target,
+			left = parseInt(collectionItemsList.css('left')),
+			delta = 0,
+			isStart = (currentItemId === 0) ? true : false,
+			tWidth = collectionItemsList.outerWidth(),
+			aWidth = colil.outerWidth(),
+			isEnd = false;
+		if (target.tagName.toLowerCase() === 'span') {
+			target = $(target).parents('div').get(0);
+		}
+
+		var item = $(collectionItems[currentItemId]),
+			delta = 0,
+			prevOffset = item.get(0).offsetLeft;
+		// console.log(isStart);
+		item.removeClass('selected-item');
+		console.log(currentItemId);
+		if (target.id === 'nextPic') {// && id + 1 < collectionItems.length) {
+			// id++;
+			selectNextItem(currentItemId);
+		} else if (target.id === 'prevPic') { //} && id > 0) {
+			// prevOffset = $(collectionItems[id - 1]).get(0).offsetLeft;
+			// id--;
+			// if (id !== 0) {
+			// 	prevOffset = $(collectionItems[id - 1]).get(0).offsetLeft;
+			// }
+			selectPreviousItem(currentItemId);
+		}
+		// console.log('offset left', item.get(0).offsetLeft);
+		// console.log(tWidth - prevOffset, '=', aWidth);
+		if (tWidth - prevOffset < aWidth) {
+			isEnd = true;
+		}
+
+		item = $(collectionItems[currentItemId]);
+		var offsetLeft = item.get(0).offsetLeft,
+			src = item.prop('src'),
+			tX = item.get(0).x;
+
+		$(collectionItems[currentItemId]).addClass('selected-item');
+		previewImage.prop('src', src);
+		if (!isStart && !isEnd) {
+			// console.log('wtf');
+			collectionItemsList.animate({
+				'left': -prevOffset
+			}, 500);
+		}
+	}
+
+	// return new offset
+	function selectNextItem(currentItemId) {
+		console.log('next');
+		var item = $(collectionItems[currentItemId]);
+		console.log(item);
+	}
+
+	// return new offset
+	function selectPreviousItem(currentItemId) {
+		console.log('previous');
+		var item = $(collectionItems[currentItemId]);
+		console.log(item);
 	}
 
 	function slideCollectionTouch(evt) {
@@ -62,9 +153,8 @@ $(function() {
 			startX = original.screenX;
 		} else if (type === "touchend") {
 			var deltaX = original.screenX - startX,
-				items = $('#items'),
-				left = parseInt(items.css('left')),
-				delta = 60,
+				left = parseInt(collectionItemsList.css('left')),
+				delta = 100,
 				tWidth = colil.width();
 
 			if (deltaX > 0 && left < 0) {
@@ -73,15 +163,10 @@ $(function() {
 				left -= delta;
 			}
 
-			items.css('left', left);
+			collectionItemsList.animate({
+				'left': left
+			}, 200);
 		}
-	}
-
-
-	function addEventListeners(to, toBind) {
-		to.addEventListener('keydown', puzzle.handleKeyInput.bind(toBind), false);
-		to.addEventListener('touchstart', toBind.handleTouchStart.bind(toBind), false);
-		to.addEventListener('touchend', toBind.handleTouchEnd.bind(toBind), false);
 	}
 
 	function handleStartClick() {
@@ -92,8 +177,7 @@ $(function() {
 		var original = evt.originalEvent,
 			target = evt.target,
 			type = evt.type,
-			items = $('#items'),
-			left = parseInt(items.css('left')),
+			left = parseInt(collectionItemsList.css('left')),
 			delta = 15,
 			tWidth = colil.width();
 
@@ -112,45 +196,7 @@ $(function() {
 				left -= delta;
 			}
 		}
-		items.css('left', left);
-	}
-
-	function changeSelectedItem(evt) {
-		var id = getSelectedItemId(),
-			target = evt.target,
-			items = $('#items'),
-			left = parseInt(items.css('left')),
-			delta = 0;
-		if (target.tagName.toLowerCase() === 'span') {
-			target = $(target).parents('div').get(0);
-		}
-
-		var item = $(collectionItems[id]),
-			delta = 0;
-		item.removeClass('selected-item');
-		if (target.id === 'nextPic' && id + 1 < collectionItems.length) {
-			id++;
-			left -= (item.outerWidth() + parseInt(item.parents('li').css('marginRight')));
-		} else if (target.id === 'prevPic' && id > 0) {
-			id--;
-			left += (item.outerWidth() + parseInt(item.parents('li').css('marginRight')));
-		}
-
-		item = $(collectionItems[id])
-		var src = item.prop('src'),
-			tX = item.get(0).x;
-		// console.log(tX - startPos);
-
-		$(collectionItems[id]).addClass('selected-item');
-		preview.prop('src', src);
-		items.animate({
-			'left': left
-		}, 500, function() {
-			console.log('animated');
-		});
-
-		console.log(colil.css('left'));
-
+		collectionItemsList.css('left', left);
 	}
 
 	function setLevel(evt) {
@@ -162,12 +208,77 @@ $(function() {
 			reader = new FileReader();
 
 		reader.addEventListener('loadend', function(evt) {
-			preview.attr('src', reader.result);
+			previewImage.attr('src', reader.result);
 		});
 
 		if (file) {
 			blockButton();
 			reader.readAsDataURL(file);
+		}
+	}
+
+	
+
+	function handleLoadingImageFromURL(evt) {
+		var source = imageURLBox.val().trim();
+		if (source === '') {
+			imageURLBox.val('');
+			return;
+		}
+		blockButton();
+		$.ajax('./loadimage.php', {
+			method: 'GET',
+			data: {
+				url: source
+			},
+			success: function(data) {
+				var response = JSON.parse(data);
+				previewImage.attr('src', response[0].data);
+			}
+		});
+	}
+
+	function blockButton() {
+		startGameButton.prop('disabled', true).addClass('disabled');
+	}
+
+	function unblockButton() {
+		startGameButton.prop('disabled', false).removeClass('disabled');
+	}
+
+	function setCollectionListWidth() {
+		var ichild = collectionItemsList.children().toArray();
+		if (ichild.length > 5) {
+			ichild.forEach(function(item) {
+				collWidth += $(item).outerWidth() + parseInt($(item).css('marginRight'));
+			});
+			collectionItemsList.width(collWidth);
+		}
+
+	}
+
+	function handlePreviewImageSuccessLoading(evt) {
+		var target  = $(evt.target);
+		if (!target.hasClass('borderedpi')) {
+			target.addClass('borderedpi');
+		}
+		$(this).css('display', 'block');
+		imageFailLoadingBox.css('display', 'none');
+		unblockButton();
+	}
+
+	function handlePreviewImageErrorLoading(evt) {
+		imageURLBox.val('');
+		imageFailLoadingBox.css('display', 'block');
+		$(this).css('display', 'none');
+	}
+
+	function deselectCollectionItems() {
+		for (var i = 0; i < collectionItems.length; i++) {
+			var item = $(collectionItems[i]);
+			if (item.hasClass('selected-item')) {
+				item.removeClass('selected-item');
+			}
 		}
 	}
 
@@ -178,47 +289,5 @@ $(function() {
 				return i;
 			}
 		}
-	}
-
-	function handleLoadingImageFromURL(evt) {
-		var source = imgUrl.val();
-		if (source !== '') {
-			blockButton();
-			$.ajax('./loadimage.php', {
-				method: 'GET',
-				data: {
-					url: source
-				},
-				success: function(data) {
-
-					var response = JSON.parse(data);
-					preview.attr('src', response[0].data).on('error', function(evt) {
-						console.log('Picture was not loaded');
-					});
-				}
-			});
-		}
-	}
-
-	function blockButton() {
-		startBtn.prop('disabled', true).addClass('disabled');
-	}
-
-	function unblockButton() {
-		startBtn.prop('disabled', false).removeClass('disabled');
-	}
-
-	function setCollectionListLength() {
-		var items = $('#items'),
-			ichild = items.children(),
-			ilength = ichild.length;
-		if (ilength > 5) {
-			for (var i = 0; i < ilength; i++) {
-				var item = $(ichild.get(i));
-				collWidth += item.outerWidth() + parseInt(item.css('marginRight'));
-			}
-			items.width(collWidth);
-		}
-
 	}
 });
