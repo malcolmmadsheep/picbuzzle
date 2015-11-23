@@ -39,8 +39,10 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
     Picpuzzle.prototype.isSolved = false;
     Picpuzzle.prototype.needText = true;
 
-    Picpuzzle.prototype.startGame = function(level) {
-        this.init(level);
+    Picpuzzle.prototype.startGame = function(level, imageSource) {
+        this.setActiveSection('game');
+        this.init(level, imageSource);
+
     };
 
     Picpuzzle.prototype.setupCanvas = function() {
@@ -50,15 +52,14 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
             canvas.width = this.CANVAS_WIDTH;
             canvas.height = this.CANVAS_HEIGHT;
             this.context = canvas.getContext('2d');
-            $(canvas).insertBefore('#toResultsBtn');
+            $(canvas).insertBefore('#gb');
         }
     };
 
-    Picpuzzle.prototype.init = function(level) {
+    Picpuzzle.prototype.init = function(level, imageSource) {
         if (window.innerWidth < this.CANVAS_WIDTH + 100) {
             this.CANVAS_WIDTH = this.CANVAS_HEIGHT = Math.ceil(window.innerWidth - 25);
         }
-        this.SECTIONS = $('section');
         this.level = level;
         this.needText = true;
         this.rows = this.cols = parseInt(level);
@@ -66,7 +67,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         this.fontSize = Math.ceil(this.CELL_WIDTH / 3);
         this.field.length = this.rows * this.cols;
         this.swapCount = 0;
-        this.setImageSource();
+        this.setImageSource(imageSource);
 
         this.setupCanvas();
         this.setupField();
@@ -75,7 +76,6 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
             this.draw();
         }
         this.isInitiated = true;
-        this.setActiveSection(this.SECTIONS_NAMES[1]);
     };
 
     Picpuzzle.prototype.setupField = function() {
@@ -124,6 +124,8 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
             this.swapCells(i, newIndex);
         }
         this.isShuffling = false;
+        this.resetSwaps();
+        this.draw();
     }
 
     Picpuzzle.prototype.showField = function() {
@@ -148,7 +150,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
     }
 
     Picpuzzle.prototype.setImageSource = function(source) {
-        this.imgSource = (typeof source === 'undefined' || source === '') ? $('#previewpic').get(0).src : source;
+        this.imgSource = source;
     }
 
     Picpuzzle.prototype.run = function() {
@@ -284,10 +286,6 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         this.isMoving = true;
     }
 
-    Picpuzzle.prototype.endGame = function() {
-        ss
-    }
-
     // return cell id by row and col values
     Picpuzzle.prototype.getId = function(i, j) {
         return i * this.rows + j;
@@ -387,13 +385,19 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
     Picpuzzle.prototype.setActiveSection = function(sectionId) {
         var s = this.SECTIONS;
         for (var i = 0; i < s.length; i++) {
-            var ss = s.get(i);
-            if (ss.id !== sectionId) {
-                $(ss).css('display', 'none');
-            } else {
-                $(ss).fadeIn(750);
+            if (s[i].isActive) {
+                $(s[i]).css({
+                    'display': 'none'
+                });
+                document.body.removeChild(s[i]);
+                s[i].isActive = false;
             }
         }
+        var section = this.SECTIONS[this.SECTIONS_NAMES.indexOf(sectionId)];
+        section.isActive = true;
+
+        document.body.appendChild(section);
+        $(section).fadeIn(1000);
     }
 
     Picpuzzle.prototype.displayResults = function() {
@@ -425,12 +429,15 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         this.context.strokeText(this.swapCount, x, y);
     };
 
-    Picpuzzle.prototype.handleToResultBtnClick = function(evt) {
-        this.isSolved = false;
+    Picpuzzle.prototype.goToResultsButtonClick = function(evt) {
         this.displayResults();
     }
 
-    Picpuzzle.prototype.handleAgainBtnClick = function(evt) {
+    Picpuzzle.prototype.tryAgainButtonClick = function(evt) {
         this.setActiveSection('menu');
+    }
+
+    Picpuzzle.prototype.resetSwaps = function() {
+        this.swapCount = 0;
     }
 })();

@@ -35,14 +35,14 @@ section {
 }
 
 #imgloadingfail {
-	width: 300px;
-	height: 175px;
-	padding: 0 10px;
-	margin: 10px auto;
+    width: 300px;
+    height: 175px;
+    padding: 0 10px;
+    margin: 10px auto;
 }
 
 #imgloadingfail h1 {
-	color: #f00;
+    color: #f00;
 }
 
 #menu .content {
@@ -101,11 +101,11 @@ input[type="file"] {
 }
 
 .start_button {
-	width: 80%;
+    width: 80%;
 }
 
 .to_res_btn {
-	width: 200px;
+    width: 200px;
 }
 
 .file-upload {
@@ -160,7 +160,7 @@ input[type="file"] {
 }
 
 .borderedpi {
-	border: 5px solid #0F6FC5;
+    border: 5px solid #0F6FC5;
 }
 
 .collection-items-list ul>li {
@@ -215,20 +215,36 @@ input[type="file"] {
 }
 
 .swnum {
-	font-weight: 600;
-	margin: 0;
+    font-weight: 600;
+    margin: 0;
 }
 
 #result_title {
-	margin: 0;
+    margin: 0;
 }
 
 .concl {
-	padding: 0 10px;
+    padding: 0 10px;
 }
 
 #results h3 {
-	margin: 0;
+    margin: 0;
+}
+
+.game-buttons {
+    width: 512px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.game-buttons button {
+    display: inline-block;
+    width: 40%;
+    margin-right: 10%;
+}
+
+.game-buttons button:last-child {
+    margin-right: 0;
 }
 
 @media screen and (max-width: 500px) {
@@ -243,27 +259,32 @@ input[type="file"] {
         width: 90%;
         height: 50px;
     }
-
+    .game-buttons {
+        width: 80%;
+    }
     #prevPic span,
     #nextPic span {
         margin-top: 10px;
     }
 }
 
-@media screen and (max-width: 450px) and (max-height: 525px) {
+@media screen and (max-width: 450px) and (max-height: 650px) {
     h1.title {
         font-size: 14pt;
         margin-bottom: 0;
     }
-
     #previewpic {
-    	margin-bottom: 0;
+        margin-bottom: 0;
+    }
+
+    #game {
+        padding-top: 50px;
     }
 }
 
 @media screen and (max-width: 450px) and (min-height: 500px) and (max-height: 750px) {
-	#previewpic {
-		width: 225px;
-		height: 225px;
-	}
+    #previewpic {
+        width: 225px;
+        height: 225px;
+    }
 }

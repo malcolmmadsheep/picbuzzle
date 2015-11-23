@@ -3,27 +3,28 @@
 $(function() {
 	var puzzle = new Picpuzzle(),
 		level = 3,
-		collWidth = 0,
 		startX = 0,
-		collectionItemsList = $('#items'),
-		previewImage = $('#previewpic'),
-		getImageByURLButton = $('#loadpic'),
-		imageURLBox = $('#imageUrl'),
+		collWidth = 0,
+		isScrolling = false,
+		collectionItemsList = $('#colil'),
 		files = $('#fromfile'),
-		startGameButton = $('#startgame'),
 		sections = $('section'),
-		complexity = $('input[name="complexity"'),
-		colil = $('#colil'),
-		toResultButton = $('#toResultsBtn'),
-		againBtn = $('#againBtn'),
+		tryAgainButton = $('#tryAgainButton'),
+		imageURLBox = $('#imageUrl'),
+		previewImage = $('#previewpic'),
+		startGameButton = $('#startgame'),
+		collectionItemsList = $('#items'),
+		getImageByURLButton = $('#loadpic'),
+		goToResultsButton = $('#toResultsBtn'),
 		toNextPictureButton = $('#nextPic'),
-		toPrevPictruveButton = $('#prevPic'),
-		collectionItems = $('.collection-item').children('img'),
+		toPreviousPictruveButton = $('#prevPic'),
+		reshuffleButton = $('#reshuffleButton'),
+		complexityLevel = $('input[name="complexity"'),
 		imageFailLoadingBox = $('#imgloadingfail'),
-		isScrolling = false;
+		collectionItems = $('.collection-item').children('img');
 
 	setCollectionListWidth();
-	complexity.on('change', setLevel);
+	complexityLevel.on('change', setLevel);
 	files.on('change', handleFileUploading);
 
 	previewImage.on('load', handlePreviewImageSuccessfulLoading);
@@ -34,19 +35,37 @@ $(function() {
 	window.addEventListener('touchend', puzzle.handleTouchEnd.bind(puzzle), false);
 
 	toNextPictureButton.on('mousedown', changeSelectedItem);
-	toPrevPictruveButton.on('mousedown', changeSelectedItem);
+	toPreviousPictruveButton.on('mousedown', changeSelectedItem);
 
-	startGameButton.on('click', handleStartClick);
-	getImageByURLButton.on('click', handleLoadingImageFromURL);
-	toResultButton.on('click', puzzle.handleToResultBtnClick.bind(puzzle));
-	againBtn.on('click', puzzle.handleAgainBtnClick.bind(puzzle));
-
-	colil.on('wheel', slideCollection);
-	colil.on('touchstart', slideCollectionTouch);
-	colil.on('touchend', slideCollectionTouch);
+	startGameButton.on('click', startButtonClick);
+	reshuffleButton.on('click', puzzle.shuffle.bind(puzzle));
+	getImageByURLButton.on('click', getImageByURLButtonClick);
+	tryAgainButton.on('click', puzzle.tryAgainButtonClick.bind(puzzle));
+	goToResultsButton.on('click', puzzle.goToResultsButtonClick.bind(puzzle));
+	
+	collectionItemsList.on('wheel', slideCollection);
+	collectionItemsList.on('touchstart', slideCollectionTouch);
+	collectionItemsList.on('touchend', slideCollectionTouch);
 	collectionItems.on('click', selectItem);
 
+	removeUnactiveSections();
 	$(collectionItems[0]).click();
+
+	function startButtonClick() {
+		puzzle.startGame(level, previewImage.prop('src'));
+	}
+
+	function setLevel(evt) {
+		level = parseInt(evt.target.value);
+	}
+
+	function blockButton() {
+		startGameButton.prop('disabled', true).addClass('disabled');
+	}
+
+	function unblockButton() {
+		startGameButton.prop('disabled', false).removeClass('disabled');
+	}
 
 	function selectItem(evt) {
 		var newItem = evt.target,
@@ -66,8 +85,8 @@ $(function() {
 			newLeft = collectionItems.get(0).offsetLeft;
 		}
 
-		if (collWidth - colil.width() < newLeft) {
-			newLeft = collWidth - colil.width();
+		if (collWidth - collectionItemsList.width() < newLeft) {
+			newLeft = collWidth - collectionItemsList.width();
 		}
 
 		collectionItemsList.animate({
@@ -112,26 +131,12 @@ $(function() {
 
 		makeSelected(newItem);
 		previewImage.prop('src', newItem.src);
-		if (offset > collWidth - colil.width()) {
-			offset = collWidth - colil.width();
+		if (offset > collWidth - collectionItemsList.width()) {
+			offset = collWidth - collectionItemsList.width();
 		}
 		collectionItemsList.animate({
 			'left': -offset
-		}, 500);
-	}
-
-	// return new offset
-	function selectNextItem(currentItemId) {
-		console.log('next');
-		var item = $(collectionItems[currentItemId]);
-		console.log(item);
-	}
-
-	// return new offset
-	function selectPreviousItem(currentItemId) {
-		console.log('previous');
-		var item = $(collectionItems[currentItemId]);
-		console.log(item);
+		}, 250);
 	}
 
 	function slideCollectionTouch(evt) {
@@ -142,7 +147,7 @@ $(function() {
 		} else if (type === "touchend") {
 			var deltaX = original.screenX - startX,
 				left = parseInt(collectionItemsList.css('left')),
-				tWidth = colil.width();
+				tWidth = collectionItemsList.width();
 			left += deltaX;
 
 			if (left > 0) {
@@ -158,17 +163,13 @@ $(function() {
 		}
 	}
 
-	function handleStartClick() {
-		puzzle.startGame(level);
-	}
-
 	function slideCollection(evt) {
 		var deltaY = evt.originalEvent.deltaY,
 			target = evt.target,
 			type = evt.type,
 			left = parseInt(collectionItemsList.css('left')),
 			delta = 150,
-			tWidth = colil.width();
+			tWidth = collectionItemsList.width();
 
 		if (deltaY < 0 && left < 0) {
 			left += delta;
@@ -196,10 +197,6 @@ $(function() {
 		}
 	}
 
-	function setLevel(evt) {
-		level = parseInt(evt.target.value);
-	}
-
 	function handleFileUploading(evt) {
 		var file = evt.target.files[0],
 			reader = new FileReader();
@@ -215,7 +212,7 @@ $(function() {
 		}
 	}
 
-	function handleLoadingImageFromURL(evt) {
+	function getImageByURLButtonClick(evt) {
 		var source = imageURLBox.val().trim();
 		if (source === '') {
 			imageURLBox.val('');
@@ -235,13 +232,7 @@ $(function() {
 		deselectCollectionItems();
 	}
 
-	function blockButton() {
-		startGameButton.prop('disabled', true).addClass('disabled');
-	}
-
-	function unblockButton() {
-		startGameButton.prop('disabled', false).removeClass('disabled');
-	}
+	
 
 	function setCollectionListWidth() {
 		var ichild = collectionItemsList.children().toArray(),
@@ -300,5 +291,14 @@ $(function() {
 
 	function makeSelected(item) {
 		$(item).addClass('selected-item');
+	}
+
+	function removeUnactiveSections() {
+		puzzle.SECTIONS = $('section');
+		for (var i = 0; i < puzzle.SECTIONS.length; i++) {
+            puzzle.SECTIONS[i].isActive = true;
+        }
+
+        puzzle.setActiveSection('menu');
 	}
 });
