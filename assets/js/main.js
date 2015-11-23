@@ -118,57 +118,6 @@ $(function() {
 		collectionItemsList.animate({
 			'left': -offset
 		}, 500);
-		// if (whichButton.tagName.toLowerCase() === 'span') {
-
-		// }
-		// var currentItemId = getSelectedItemId(),
-		// 	target = evt.target,
-		// 	left = parseInt(collectionItemsList.css('left')),
-		// 	delta = 0,
-		// 	isStart = (currentItemId === 0) ? true : false,
-		// 	tWidth = collectionItemsList.outerWidth(),
-		// 	aWidth = colil.outerWidth(),
-		// 	isEnd = false;
-		// if (target.tagName.toLowerCase() === 'span') {
-		// 	target = $(target).parents('div').get(0);
-		// }
-
-		// var item = $(collectionItems[currentItemId]),
-		// 	delta = 0,
-		// 	prevOffset = item.get(0).offsetLeft;
-		// // console.log(isStart);
-		// item.removeClass('selected-item');
-		// console.log(currentItemId);
-		// if (target.id === 'nextPic') {// && id + 1 < collectionItems.length) {
-		// 	// id++;
-		// 	selectNextItem(currentItemId);
-		// } else if (target.id === 'prevPic') { //} && id > 0) {
-		// 	// prevOffset = $(collectionItems[id - 1]).get(0).offsetLeft;
-		// 	// id--;
-		// 	// if (id !== 0) {
-		// 	// 	prevOffset = $(collectionItems[id - 1]).get(0).offsetLeft;
-		// 	// }
-		// 	selectPreviousItem(currentItemId);
-		// }
-		// // console.log('offset left', item.get(0).offsetLeft);
-		// // console.log(tWidth - prevOffset, '=', aWidth);
-		// if (tWidth - prevOffset < aWidth) {
-		// 	isEnd = true;
-		// }
-
-		// item = $(collectionItems[currentItemId]);
-		// var offsetLeft = item.get(0).offsetLeft,
-		// 	src = item.prop('src'),
-		// 	tX = item.get(0).x;
-
-		// $(collectionItems[currentItemId]).addClass('selected-item');
-		// previewImage.prop('src', src);
-		// if (!isStart && !isEnd) {
-		// 	// console.log('wtf');
-		// 	collectionItemsList.animate({
-		// 		'left': -prevOffset
-		// 	}, 500);
-		// }
 	}
 
 	// return new offset

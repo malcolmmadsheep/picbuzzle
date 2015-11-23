@@ -70,8 +70,10 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
 
         this.setupCanvas();
         this.setupField();
-        this.draw();
-
+        var k = 0;
+        while (k++ < 40) {
+            this.draw();
+        }
         this.isInitiated = true;
         this.setActiveSection(this.SECTIONS_NAMES[1]);
     };
