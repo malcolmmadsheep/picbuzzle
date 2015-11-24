@@ -34,15 +34,16 @@ section {
     display: block;
 }
 
-#imageLoadingFail {
+.image-loading-error {
     width: 300px;
     height: 175px;
     padding: 0 10px;
     margin: 10px auto;
 }
 
-#imageLoadingFail h1 {
+.image-loading-error h1 {
     color: #f00;
+    margin-top: 0;
 }
 
 #menu .content {

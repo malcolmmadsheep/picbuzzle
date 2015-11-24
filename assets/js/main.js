@@ -127,13 +127,17 @@ $(function() {
 			return;
 		}
 		blockButton();
-		$.ajax('./loadimage.php', {
+		$.ajax('loadimage.php', {
 			method: 'GET',
 			data: {
 				url: source
 			},
 			success: function(data) {
+				if (data.indexOf('[') !== 0) {
+					data = data.substr(data.indexOf('['));
+				}
 				var response = JSON.parse(data);
+
 				previewPicture.attr('src', response[0].data);
 			}
 		});
@@ -295,6 +299,13 @@ $(function() {
 		$(this).animate({
 			'top': labelTop
 		});
+		helpBox.isDown = !helpBox.isDown;
+	}
+
+	function hideHelpBox(evt) {
+		if (helpBox.isDown) {
+			helpLabel.click();
+		}
 	}
 
 	function prepeareWindowForWork() {
@@ -314,6 +325,7 @@ $(function() {
 		reshuffleButton.on('click', puzzle.shuffle.bind(puzzle));
 		getImageByURLButton.on('click', getImageByURLButtonClick);
 		tryAgainButton.on('click', puzzle.tryAgainButtonClick.bind(puzzle));
+		goToResultsButton.on('click', hideHelpBox);
 		goToResultsButton.on('click', puzzle.goToResultsButtonClick.bind(puzzle));
 		collectionItems.on('click', selectItem);
 		collectionItemsList.on('wheel', slideCollection);
