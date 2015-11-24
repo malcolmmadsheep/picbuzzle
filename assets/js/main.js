@@ -6,51 +6,28 @@ $(function() {
 		startX = 0,
 		collWidth = 0,
 		isScrolling = false,
-		collectionListItemsWrapper = $('#colil'),
 		files = $('#fromfile'),
 		sections = $('section'),
-		tryAgainButton = $('#tryAgainButton'),
 		imageURLBox = $('#imageUrl'),
-		previewImage = $('#previewpic'),
-		startGameButton = $('#startgame'),
 		collectionItemsList = $('#items'),
-		getImageByURLButton = $('#loadpic'),
-		goToResultsButton = $('#toResultsBtn'),
-		toNextPictureButton = $('#nextPic'),
-		toPreviousPictruveButton = $('#prevPic'),
-		reshuffleButton = $('#reshuffleButton'),
+		previewPicture = $('#previewPicture'),
+		imageFailLoadingBox = $('#imageLoadingFail'),
 		complexityLevel = $('input[name="complexity"'),
-		imageFailLoadingBox = $('#imgloadingfail'),
-		collectionItems = $('.collection-item').children('img');
+		collectionListItemsWrapper = $('#collectionItemsList'),
+		collectionItems = $('.collection-item').children('img'),
+		tryAgainButton = $('#tryAgainButton'),
+		reshuffleButton = $('#reshuffleButton'),
+		startGameButton = $('#startGameButton'),
+		goToResultsButton = $('#rageQuitButton'),
+		NextPictureButton = $('#nextPictureButton'),
+		getImageByURLButton = $('#getImageByURLButton'),
+		PreviousPictruveButton = $('#previousPictureButton');
 
-	setCollectionListWidth();
-	complexityLevel.on('change', setLevel);
-	files.on('change', handleFileUploading);
-
-	previewImage.on('load', handlePreviewImageSuccessfulLoading);
-	previewImage.on('error', handlePreviewImageErrorLoading);
-
-	window.addEventListener('keydown', puzzle.handleKeyInput.bind(puzzle), false);
-
-	toNextPictureButton.on('mousedown', changeSelectedItem);
-	toPreviousPictruveButton.on('mousedown', changeSelectedItem);
-
-	startGameButton.on('click', startButtonClick);
-	reshuffleButton.on('click', puzzle.shuffle.bind(puzzle));
-	getImageByURLButton.on('click', getImageByURLButtonClick);
-	tryAgainButton.on('click', puzzle.tryAgainButtonClick.bind(puzzle));
-	goToResultsButton.on('click', puzzle.goToResultsButtonClick.bind(puzzle));
-	
-	collectionItemsList.on('wheel', slideCollection);
-	collectionItemsList.on('touchstart', slideCollectionByTouch);
-	collectionItemsList.on('touchend', slideCollectionByTouch);
-	collectionItems.on('click', selectItem);
-
-	removeUnactiveSections();
-	$(collectionItems[0]).click();
+	addActionListeners();
+	prepeareWindowForWork();
 
 	function startButtonClick() {
-		puzzle.startGame(level, previewImage.prop('src'));
+		puzzle.startGame(level, previewPicture.prop('src'));
 	}
 
 	function setLevel(evt) {
@@ -80,7 +57,7 @@ $(function() {
 		}
 	}
 
-	function handlePreviewImageErrorLoading(evt) {
+	function previewPictureLoadingError(evt) {
 		imageURLBox.val('');
 		imageFailLoadingBox.css('display', 'block');
 		$(this).css('display', 'none');
@@ -107,13 +84,13 @@ $(function() {
 	function removeUnactiveSections() {
 		puzzle.SECTIONS = $('section');
 		for (var i = 0; i < puzzle.SECTIONS.length; i++) {
-            puzzle.SECTIONS[i].isActive = true;
-        }
+			puzzle.SECTIONS[i].isActive = true;
+		}
 
-        puzzle.setActiveSection('menu');
+		puzzle.setActiveSection('menu');
 	}
 
-	function handlePreviewImageSuccessfulLoading(evt) {
+	function previewPictureLoadingSuccess(evt) {
 		var target = $(evt.target);
 		if (!target.hasClass('borderedpi')) {
 			target.addClass('borderedpi');
@@ -129,7 +106,7 @@ $(function() {
 		deselectCollectionItems();
 
 		reader.addEventListener('loadend', function(evt) {
-			previewImage.attr('src', reader.result);
+			previewPicture.attr('src', reader.result);
 		});
 
 		if (file) {
@@ -152,7 +129,7 @@ $(function() {
 			},
 			success: function(data) {
 				var response = JSON.parse(data);
-				previewImage.attr('src', response[0].data);
+				previewPicture.attr('src', response[0].data);
 			}
 		});
 		deselectCollectionItems();
@@ -237,7 +214,7 @@ $(function() {
 		makeSelected(newItem);
 
 		currentItemId = getSelectedItemId();
-		
+
 		if (currentItemId > 1) {
 			newLeft = collectionItems.get(currentItemId - 2).offsetLeft;
 		} else if (currentItemId === 1) {
@@ -250,9 +227,9 @@ $(function() {
 
 		collectionItemsList.animate({
 			'left': -newLeft
-		}, 250); 
+		}, 250);
 
-		previewImage.prop('src', $(newItem).prop('src'));
+		previewPicture.prop('src', $(newItem).prop('src'));
 	}
 
 	function changeSelectedItem(evt) {
@@ -266,7 +243,7 @@ $(function() {
 		deselectCollectionItems();
 
 		var tId = t.prop('id');
-		if (tId === 'nextPic') {
+		if (tId === 'nextPictureButton') {
 			if (currentId < collectionItems.length - 1) {
 				newId = currentId + 1;
 				if (newId > 1) {
@@ -288,12 +265,38 @@ $(function() {
 		var newItem = $(collectionItems[newId]).get(0);
 
 		makeSelected(newItem);
-		previewImage.prop('src', newItem.src);
+		previewPicture.prop('src', newItem.src);
 		if (offset > collWidth - collectionListItemsWrapper.width()) {
 			offset = collWidth - collectionListItemsWrapper.width();
 		}
 		collectionItemsList.animate({
 			'left': -offset
 		}, 250);
-	}	
+	}
+
+	function prepeareWindowForWork() {
+		setCollectionListWidth();
+		removeUnactiveSections();
+		$(collectionItems[0]).click();
+	}
+
+	function addActionListeners() {
+		complexityLevel.on('change', setLevel);
+		files.on('change', handleFileUploading);
+		previewPicture.on('error', previewPictureLoadingError);
+		previewPicture.on('load', previewPictureLoadingSuccess);
+		NextPictureButton.on('mousedown', changeSelectedItem);
+		PreviousPictruveButton.on('mousedown', changeSelectedItem);
+		startGameButton.on('click', startButtonClick);
+		reshuffleButton.on('click', puzzle.shuffle.bind(puzzle));
+		getImageByURLButton.on('click', getImageByURLButtonClick);
+		tryAgainButton.on('click', puzzle.tryAgainButtonClick.bind(puzzle));
+		goToResultsButton.on('click', puzzle.goToResultsButtonClick.bind(puzzle));
+		collectionItems.on('click', selectItem);
+		collectionItemsList.on('wheel', slideCollection);
+		collectionItemsList.on('touchstart', slideCollectionByTouch);
+		collectionItemsList.on('touchend', slideCollectionByTouch);
+		window.addEventListener('keydown', puzzle.handleKeyInput.bind(puzzle), false);
+
+	}
 });

@@ -39,28 +39,30 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
     Picpuzzle.prototype.isSolved = false;
     Picpuzzle.prototype.needText = true;
 
+    // start game
     Picpuzzle.prototype.startGame = function(level, imageSource) {
         this.setActiveSection('game');
         this.init(level, imageSource);
 
     };
 
+    // create canvas
     Picpuzzle.prototype.setupCanvas = function() {
         if (this.context === null) {
             var canvas = document.createElement('canvas');
-            canvas.id = 'puzzle';
             canvas.width = this.CANVAS_WIDTH;
             canvas.height = this.CANVAS_HEIGHT;
             canvas.addEventListener('touchstart', this.canvasTouchStart.bind(this), false);
             canvas.addEventListener('touchend', this.canvasTouchEnd.bind(this), false);
             this.context = canvas.getContext('2d');
-            $(canvas).insertBefore('#gb');
+            $(canvas).insertBefore('#game-buttons');
         }
     };
 
+    // initiate parameters of puzzle
     Picpuzzle.prototype.init = function(level, imageSource) {
-        if (window.innerWidth < this.CANVAS_WIDTH + 100) {
-            this.CANVAS_WIDTH = this.CANVAS_HEIGHT = Math.ceil(window.innerWidth - 25);
+        if (window.innerWidth < this.CANVAS_WIDTH) {
+            this.CANVAS_WIDTH = this.CANVAS_HEIGHT = Math.ceil(window.innerWidth - 50);
         }
         this.level = level;
         this.needText = true;
@@ -80,6 +82,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         this.isInitiated = true;
     };
 
+    // create new array of elements
     Picpuzzle.prototype.setupField = function() {
         this.imgSource = this.resize(this.imgSource);
         for (var i = 0; i < this.rows; i++) {
@@ -98,6 +101,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         this.shuffle();
     };
 
+    // drawing function
     Picpuzzle.prototype.draw = function() {
         var id = -1,
             cell = null,
@@ -117,6 +121,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         }
     }
 
+    // shuffle gamefield pieces position
     Picpuzzle.prototype.shuffle = function() {
         var length = this.field.length,
             field = this.field;
@@ -130,15 +135,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         this.draw();
     }
 
-    Picpuzzle.prototype.showField = function() {
-        var index = -1;
-        for (var i = 0; i < this.rows; i++) {
-            for (var j = 0; j < this.cols; j++) {
-                index = this.getId(i, j);
-            }
-        }
-    }
-
+    // resize pictures loaded from other domains
     Picpuzzle.prototype.resize = function(source) { // source - string value of image source
         var canvas = document.createElement('canvas'),
             context = canvas.getContext('2d'),
@@ -151,10 +148,12 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         return canvas.toDataURL();
     }
 
+    // set source of image puzzle
     Picpuzzle.prototype.setImageSource = function(source) {
         this.imgSource = source;
     }
 
+    // move puzzle pieces based on direction queue history
     Picpuzzle.prototype.run = function() {
         var id = this.getEmptyCell(),
             length = this.field.length,
@@ -186,11 +185,13 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         }
     }
 
+    // add to direction queue next direction
     Picpuzzle.prototype.move = function(direction) {
         this.enqueueDirection(direction);
         this.run();
     }
 
+    // checks if game is over
     Picpuzzle.prototype.check = function() {
         var field = this.field,
             length = field.length,
@@ -204,6 +205,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         return true;
     }
 
+    // swap cells' parameters
     Picpuzzle.prototype.swapCells = function(i, j) {
         var temp = this.field[i];
 
@@ -216,6 +218,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         this.swapEnding();
     }
 
+    // invoke when swap is over
     Picpuzzle.prototype.swapEnding = function() {
         if (!this.isShuffling) {
             this.swapCount++;
@@ -231,6 +234,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         }
     }
 
+    // return id position of empty cell
     Picpuzzle.prototype.getEmptyCell = function() {
         var field = this.field,
             length = field.length;
@@ -241,6 +245,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         }
     }
 
+    // move cell to empty space
     Picpuzzle.prototype.tweenCell = function(i, j) {
         var f = this.field,
             ec = f[i].coords,
@@ -273,6 +278,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         }
     }
 
+    // animate cell moving
     Picpuzzle.prototype.animate = function(data) {
         var f = data.puzzle.field,
             dM = Math.abs(data.deltaM),
@@ -378,6 +384,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
             }
     }
 
+    // set one of section visible and remove others
     Picpuzzle.prototype.setActiveSection = function(sectionId) {
         var s = this.SECTIONS;
         for (var i = 0; i < s.length; i++) {
@@ -396,6 +403,7 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         $(section).fadeIn(1000);
     }
 
+    // make results section active and show game result
     Picpuzzle.prototype.displayResults = function() {
         var id = this.SECTIONS_NAMES.indexOf('results'),
             conclusion = 'YOU\'VE BEEN SOLVED THIS BUZZLE!',
@@ -409,11 +417,12 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
             resultTitle = 'What a pitty!';
         }
         $('#resultImage').prop('src', this.imgSource);
-        $('#result_title').text(resultTitle);
-        $('#swapnumber').text(this.swapCount);
+        $('#result-title').text(resultTitle);
+        $('#swapNumber').text(this.swapCount);
         $('#conclusion').text(conclusion);
     }
 
+    // draw number of swaps in the corner of playfield
     Picpuzzle.prototype.drawSwapCountText = function(x, y) {
         this.context.moveTo(0, 0);
         this.context.font = 'bold ' + this.fontSize + 'px Arial';
@@ -425,14 +434,17 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
         this.context.strokeText(this.swapCount, x, y);
     };
 
+    // event listener for rage quit button from game section
     Picpuzzle.prototype.goToResultsButtonClick = function(evt) {
         this.displayResults();
     }
 
+    // event listener for again button from result section
     Picpuzzle.prototype.tryAgainButtonClick = function(evt) {
         this.setActiveSection('menu');
     }
 
+    // reset number of completed swaps
     Picpuzzle.prototype.resetSwaps = function() {
         this.swapCount = 0;
     }

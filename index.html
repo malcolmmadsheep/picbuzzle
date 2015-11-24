@@ -13,35 +13,42 @@
 <body>
     <h1 class="title">Picbuzzle</h1>
     <section id="menu">
-        <img src="" alt="Previev picture must be here" id="previewpic" class="previewimage borderedpi">
+        <img src="" alt="Preview picture must be here" id="previewPicture" class="previewimage bordered">
+        <div id="imageLoadingFail" style="display: none;">
+        	<h1>Sorry!</h1>
+        	<h3>I couldn&apos;t load your image.</h3>
+        	<h3>Try again or use another method.</h3>
+        </div>
         <span>Select picture from collection:</span>
-        <div class="collection">
-            <div id="prevPic"><span>&lt;</span></div>
-            <div class="collection-items-list" id="colil">
+        <div class="collection-wrapper">
+            <div id="previousPictureButton"><span>&lt;</span></div>
+            <div class="collection-items-list" id="collectionItemsList">
                 <ul id="items">
-                    <li class="collection-item"><img src="./assets/img/p1.png" alt="" class="selected-item" /></li>
+                    <li class="collection-item"><img src="./assets/img/p1.png" alt=""/></li>
                     <li class="collection-item"><img src="./assets/img/p2.jpg" alt="" /></li>
+                    <li class="collection-item"><img src="./assets/img/p11.jpg" alt="" /></li>
                     <li class="collection-item"><img src="./assets/img/p3.jpg" alt="" /></li>
                     <li class="collection-item"><img src="./assets/img/p4.jpg" alt="" /></li>
                     <li class="collection-item"><img src="./assets/img/p5.jpg" alt="" /></li>
+                    <li class="collection-item"><img src="./assets/img/p13.jpg" alt="" /></li>
                     <li class="collection-item"><img src="./assets/img/p6.jpg" alt="" /></li>
                     <li class="collection-item"><img src="./assets/img/p7.jpg" alt="" /></li>
                     <li class="collection-item"><img src="./assets/img/p8.jpg" alt="" /></li>
                     <li class="collection-item"><img src="./assets/img/p9.jpg" alt="" /></li>
                     <li class="collection-item"><img src="./assets/img/p10.jpg" alt="" /></li>
-                    <li class="collection-item"><img src="./assets/img/p11.jpg" alt="" /></li>
+                    <li class="collection-item"><img src="./assets/img/p12.jpg" alt="" /></li>
                 </ul>
             </div>
-            <div id="nextPic"><span>&gt;</span></div>
+            <div id="nextPictureButton"><span>&gt;</span></div>
         </div>
         <div class="content">
             <div class="game_settings">
                 <span>Or get it by URL:</span>
-                <input type="text" id="imageUrl" name="imgURL" class="input-source-url" placeholder="Paste your URL here">
-                <button id="loadpic">Get</button>
+                <input type="text" id="imageUrl" name="imgURL" class="source-url" placeholder="Paste your URL here">
+                <button id="getImageByURLButton">Get</button>
                 <span>Or upload picture from local storage:</span>
-                <label class="btn btn-primary upldbtn">Upload
-                    <input type="file" id="fromfile" name="files" accept="image/*" class="file-upload">
+                <label class="btn btn-primary upload-button">Upload
+                    <input type="file" id="fromfile" name="files" accept="image/*">
                 </label>
                 Select level:
                 <label>
@@ -56,22 +63,22 @@
                 <label>
                     <input type="radio" value="6" name="complexity">6
                 </label>
-                <button id="startgame" class="btn btn-success disabled start_button" disabled>Start game!</button>
+                <button id="startGameButton" class="btn btn-success disabled start-button" disabled>Start game!</button>
             </div>
         </div>
     </section>
     <section id="game">
-        <div id="gb" class="game-buttons">
+        <div id="game-buttons" class="game-buttons-container">
             <button class="btn btn-primary" id="reshuffleButton">Reshuffle</button>
-            <button class="btn btn-danger to_res_btn" id="toResultsBtn">Rage Quit</button>
+            <button class="btn btn-danger" id="rageQuitButton">Rage Quit</button>
         </div>
         <h6>*If you see only white screen try to slide it in different directions</h6>
     </section>
     <section id="results">
         <img id="resultImage" alt="Result image" src="" class="previewimage" />
-        <h1 id="result_title"></h1>
+        <h1 id="result-title"></h1>
         <h3>You've made</h3>
-        <h1 id="swapnumber" class="swnum"></h1>
+        <h1 id="swapNumber" class="swap-number"></h1>
         <h3>swaps</h3>
         <h4 id="conclusion" class="concl"></h4>
         <button class="btn btn-primary" id="tryAgainButton">AGAIN!</button>
