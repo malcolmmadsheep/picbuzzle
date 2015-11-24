@@ -175,8 +175,9 @@ input[type="file"] {
 }
 
 .collection-items-list ul>li>img {
-    margin-top: 15%;
-    height: 70%;
+    margin-top: 10px;
+    height: 80px;
+    width: 80px;
 }
 
 .collection-items-list,
@@ -250,14 +251,19 @@ input[type="file"] {
 @media screen and (max-width: 500px) {
     .previewimage {
         max-width: 100%;
-        width: 50%;
-        height: auto;
+        width: 170px;
+        height: 170px;
         margin-top: 5px;
         margin-left: auto;
     }
     .collection {
         width: 90%;
         height: 50px;
+    }
+    .collection-items-list ul>li>img {
+        margin-top: 5px;
+        height: 40px;
+        width: 40px;
     }
     .game-buttons {
         width: 80%;
@@ -276,7 +282,6 @@ input[type="file"] {
     #previewpic {
         margin-bottom: 0;
     }
-
     #game {
         padding-top: 50px;
     }

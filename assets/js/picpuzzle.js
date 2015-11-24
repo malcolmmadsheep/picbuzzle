@@ -51,6 +51,8 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
             canvas.id = 'puzzle';
             canvas.width = this.CANVAS_WIDTH;
             canvas.height = this.CANVAS_HEIGHT;
+            canvas.addEventListener('touchstart', this.canvasTouchStart.bind(this), false);
+            canvas.addEventListener('touchend', this.canvasTouchEnd.bind(this), false);
             this.context = canvas.getContext('2d');
             $(canvas).insertBefore('#gb');
         }
@@ -341,20 +343,15 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
     }
 
     // handle finger touch start
-    Picpuzzle.prototype.handleTouchStart = function(evt) {
-        if (this.context !== null &&
-            evt.target === this.context.canvas) {
+    Picpuzzle.prototype.canvasTouchStart = function(evt) {
             evt.preventDefault();
             var c = evt.changedTouches[0];
             this.startTouchCoords.x = c.screenX;
             this.startTouchCoords.y = c.screenY;
-        }
     }
 
     // handle finger touch end
-    Picpuzzle.prototype.handleTouchEnd = function(evt) {
-        if (this.context !== null &&
-            evt.target === this.context.canvas) {
+    Picpuzzle.prototype.canvasTouchEnd = function(evt) {
             var c = evt.changedTouches[0],
                 endCoords = {
                     x: c.screenX,
@@ -379,7 +376,6 @@ function ImageCell(id, sx, sy, x, y, w, h, image) {
             if (direction !== '' && this.isInitiated) {
                 this.move(direction);
             }
-        }
     }
 
     Picpuzzle.prototype.setActiveSection = function(sectionId) {
