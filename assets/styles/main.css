@@ -98,6 +98,10 @@ input[type="file"] {
     width: 60%;
 }
 
+#tryAgainButton {
+    width: 200px;
+}
+
 .start-button {
     width: 80%;
     margin: 0 auto;
@@ -242,6 +246,43 @@ input[type="file"] {
 
 .game-buttons-container>button:last-child {
     margin-right: 0;
+}
+
+.small-help,
+.big-help {
+    position: fixed;
+}
+
+.small-help {
+    top: 0;
+    left: 25px;
+    width: 32px;
+    height: 30px;
+}
+
+.small-help>img {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.big-help {
+    width: 250px;
+    height: 250px;
+    left: 10px;
+    top: -300px;
+    border-radius: 0 0 10px 10px;
+    background-color: #fff;
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #000;
+}
+
+.big-help>img {
+    width: 96%;
+    height: 96%;
+    border-radius: 0 0 10px 10px;
+    margin: 2%;
 }
 
 @media screen and (max-width: 500px) {

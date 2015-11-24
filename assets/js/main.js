@@ -21,13 +21,18 @@ $(function() {
 		goToResultsButton = $('#rageQuitButton'),
 		NextPictureButton = $('#nextPictureButton'),
 		getImageByURLButton = $('#getImageByURLButton'),
-		PreviousPictruveButton = $('#previousPictureButton');
+		PreviousPictruveButton = $('#previousPictureButton'),
+		helpLabel = $('#helplabel'),
+		helpBox = $('#helpbox'),
+		helpPicture = $('#helpPicture');
 
 	addActionListeners();
 	prepeareWindowForWork();
 
 	function startButtonClick() {
-		puzzle.startGame(level, previewPicture.prop('src'));
+		var source = previewPicture.prop('src');
+		puzzle.startGame(level, source);
+		helpPicture.prop('src', source);
 	}
 
 	function setLevel(evt) {
@@ -274,6 +279,24 @@ $(function() {
 		}, 250);
 	}
 
+	function helpLabelClick(evt) {
+		var top = parseInt(helpBox.css('top')),
+			labelTop = top + helpBox.outerHeight();
+		if (top === 0) {
+			labelTop = top;
+			top = -helpBox.outerHeight();
+		} else {
+			top = 0;
+			labelTop = helpBox.outerHeight();
+		}
+		helpBox.animate({
+			'top': top
+		});
+		$(this).animate({
+			'top': labelTop
+		});
+	}
+
 	function prepeareWindowForWork() {
 		setCollectionListWidth();
 		removeUnactiveSections();
@@ -296,7 +319,7 @@ $(function() {
 		collectionItemsList.on('wheel', slideCollection);
 		collectionItemsList.on('touchstart', slideCollectionByTouch);
 		collectionItemsList.on('touchend', slideCollectionByTouch);
+		helpLabel.on('click', helpLabelClick);
 		window.addEventListener('keydown', puzzle.handleKeyInput.bind(puzzle), false);
-
 	}
 });
