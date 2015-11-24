@@ -224,8 +224,10 @@ input[type="file"] {
     max-width: 80%;
 }
 
-.concl {
+.conclusion-phrase {
+    max-width: 500px;
     padding: 0 10px;
+    margin: 10px auto;
 }
 
 #results h3 {

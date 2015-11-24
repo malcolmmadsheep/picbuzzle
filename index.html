@@ -7,6 +7,7 @@
     <title>Picbuzzle</title>
     <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/styles/main.css">
+    <link rel="icon" type="image/png" href="favicon.png">
     <script src="./bower_components/jquery/dist/jquery.js"></script>
 </head>
 
@@ -47,7 +48,7 @@
                 <input type="text" id="imageUrl" name="imgURL" class="source-url" placeholder="Paste your URL here">
                 <button id="getImageByURLButton">Get</button>
                 <span>Or upload picture from local storage:</span>
-                <label class="btn btn-primary upload-button">Upload
+                <label class="btn btn-primary upload-button">Upload File
                     <input type="file" id="fromfile" name="files" accept="image/*">
                 </label>
                 Select level:
@@ -82,7 +83,7 @@
         <h3>You've made</h3>
         <h1 id="swapNumber" class="swap-number"></h1>
         <h3>swaps</h3>
-        <h4 id="conclusion" class="concl"></h4>
+        <h4 id="conclusion" class="conclusion-phrase"></h4>
         <button class="btn btn-primary" id="tryAgainButton">AGAIN!</button>
     </section>
     <script src="./assets/js/picpuzzle.js"></script>
